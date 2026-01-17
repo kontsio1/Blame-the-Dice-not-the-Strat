@@ -19,24 +19,7 @@ public class Simulation(Army attackingArmy, Army defendingArmy, int numberOfSimu
         for (int i = 0; i < NumberOfSimulations; i++)
         {
             Console.WriteLine($"\n--- {(double)i / NumberOfSimulations * 100:F2}% Complete ---\n");
-            var battle = new Battle(
-                new Army(
-                    true,
-                    AttackingArmy.units.InfantryUnits.Count,
-                    AttackingArmy.units.ArtilleryUnits.Count,
-                    AttackingArmy.units.TankUnits.Count,
-                    AttackingArmy.units.FighterUnits.Count,
-                    AttackingArmy.units.BomberUnits.Count
-                ),
-                new Army(
-                    false,
-                    DefendingArmy.units.InfantryUnits.Count,
-                    DefendingArmy.units.ArtilleryUnits.Count,
-                    DefendingArmy.units.TankUnits.Count,
-                    DefendingArmy.units.FighterUnits.Count,
-                    DefendingArmy.units.BomberUnits.Count
-                )
-            );
+            var battle = new Battle(attackingArmy.Clone(), defendingArmy.Clone());
             var battleResult = battle.Fight();
             Stats.RecordResult(battleResult);
         }
@@ -51,9 +34,11 @@ public class SimulationStats
     public int DefenderWon { get; set; }
     public int Draw { get; set; }
     public int TotalBattles => AttackerWon + DefenderWon + Draw;
-    public int AttackerWonPercentage => TotalBattles == 0 ? 0 : (AttackerWon * 100) / TotalBattles;
-    public int DefenderWonPercentage => TotalBattles == 0 ? 0 : (DefenderWon * 100) / TotalBattles;
-    public int DrawPercentage => TotalBattles == 0 ? 0 : (Draw * 100) / TotalBattles;
+    public double AttackerWonPercentage =>
+        TotalBattles == 0 ? 0 : (AttackerWon * 100.0) / TotalBattles;
+    public double DefenderWonPercentage =>
+        TotalBattles == 0 ? 0 : (DefenderWon * 100.0) / TotalBattles;
+    public double DrawPercentage => TotalBattles == 0 ? 0 : (Draw * 100.0) / TotalBattles;
     private List<Units> AttackerRemainingUnits { get; set; } = new List<Units>();
     private List<Units> DefenderRemainingUnits { get; set; } = new List<Units>();
     public UnitsStats AttackerRemainingUnitsAvg =>

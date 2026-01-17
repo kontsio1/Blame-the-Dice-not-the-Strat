@@ -2,6 +2,7 @@ public class Army
 {
     public Units units;
     public int Cost => units.Cost;
+    public bool isAttacking;
 
     public Army(
         bool isAttacking = false,
@@ -26,6 +27,7 @@ public class Army
             CruiserCount,
             BattleshipCount
         );
+        this.isAttacking = isAttacking;
     }
 
     public List<Unit> GetAllUnits()
@@ -216,5 +218,20 @@ public class Army
             }
         }
         return units;
+    }
+
+    public Army Clone()
+    {
+        return new Army(
+            this.isAttacking,
+            units.InfantryUnits.Count,
+            units.ArtilleryUnits.Count,
+            units.TankUnits.Count,
+            units.FighterUnits.Count,
+            units.BomberUnits.Count,
+            units.AntiAirUnits.Count,
+            units.CruiserUnits.Count,
+            units.BattleshipUnits.Count
+        );
     }
 }
