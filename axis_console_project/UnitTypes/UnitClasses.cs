@@ -1,3 +1,5 @@
+namespace axis_console_project.UnitTypes;
+
 public class LandUnit : Unit { }
 
 public class AirUnit : Unit

@@ -1,3 +1,5 @@
+namespace axis_console_project.BaseClasses;
+
 public class UnitsStats(
     double infantryUnits,
     double artilleryUnits,

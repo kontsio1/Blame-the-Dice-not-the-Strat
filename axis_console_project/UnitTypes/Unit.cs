@@ -1,3 +1,5 @@
+namespace axis_console_project.UnitTypes;
+
 public abstract class Unit
 {
     protected string Name { get; set; } = "";

@@ -1,4 +1,4 @@
-using static Army;
+namespace axis_console_project.BaseClasses;
 
 public class Simulation(Army attackingArmy, Army defendingArmy, int numberOfSimulations)
 {

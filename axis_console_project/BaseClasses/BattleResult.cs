@@ -1,3 +1,6 @@
+namespace axis_console_project.BaseClasses;
+
+using axis_console_project.UnitTypes;
 using static Army;
 
 public class BattleInfo

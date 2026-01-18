@@ -1,3 +1,5 @@
+namespace axis_console_project.BaseClasses;
+
 public class Battle(Army attackingArmy, Army defendingArmy)
 {
     public Army AttackingArmy = attackingArmy;

@@ -1,9 +1,13 @@
+namespace axis_console_project.UnitTypes.Sea;
+
 public class Cruiser : NavalUnit
 {
+    public static int cost = 12;
+
     public Cruiser(bool isAttacking, bool participatesInBattle = true)
     {
         this.Name = "Cruiser";
-        this.Cost = 12;
+        this.Cost = cost;
         this.Attack = 3;
         this.Defence = 3;
         this.isAttacking = isAttacking;

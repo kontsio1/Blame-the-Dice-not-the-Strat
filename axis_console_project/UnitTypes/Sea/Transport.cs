@@ -1,3 +1,5 @@
+namespace axis_console_project.UnitTypes.Sea;
+
 public class Transport : NavalUnit
 {
     public Transport(bool isAttacking)

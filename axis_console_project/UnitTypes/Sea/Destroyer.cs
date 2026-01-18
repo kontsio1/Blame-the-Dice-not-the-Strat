@@ -1,3 +1,5 @@
+namespace axis_console_project.UnitTypes.Sea;
+
 public class Destroyer : NavalUnit
 {
     public Destroyer(bool isAttacking)
