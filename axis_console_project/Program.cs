@@ -12,3 +12,5 @@ var simResults = simulation.Run();
 Console.WriteLine(simulation.ToString());
 simResults.Explain();
 Console.WriteLine($"{simulation.AttackingArmy.Cost} CP vs {simulation.DefendingArmy.Cost} CP");
+
+// var comps = Helpers.GetAllCombinations(20);
