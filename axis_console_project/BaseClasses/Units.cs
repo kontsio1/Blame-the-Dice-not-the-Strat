@@ -104,7 +104,7 @@ public class Units
 
     public override string ToString()
     {
-        return $"Infantry: {InfantryUnits.Count},\n Artillery: {ArtilleryUnits.Count},\n Tanks: {TankUnits.Count},\n Fighters: {FighterUnits.Count},\n Bombers: {BomberUnits.Count}";
+        return $"Infantry:{InfantryUnits.Count}, Artillery:{ArtilleryUnits.Count}, Tanks:{TankUnits.Count}, Fighters:{FighterUnits.Count}, Bombers:{BomberUnits.Count}, TotalCost:{Cost}";
     }
 
     public Units Clone()

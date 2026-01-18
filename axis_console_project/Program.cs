@@ -1,4 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using axis_console_project.BaseClasses;
 using axis_console_project.Resolvers;
 
 Console.WriteLine("Hello, World!");
@@ -14,5 +15,20 @@ var totalSims = 10000;
 // Console.WriteLine(simulation.ToString());
 // simResults.Explain();
 // Console.WriteLine($"{simulation.AttackingArmy.Cost} CP vs {simulation.DefendingArmy.Cost} CP");
+var defendingArmy = new Army(false, 5, 0, 0, 0);
+var armies = ArmyCompResolver.GetPossibleArmies(20, true);
 
-var comps = ArmyCompResolver.GetAllCombinations(10);
+var optimalCompResults = armies
+    .Select(attackingArmy =>
+    {
+        var simulation = new Simulation(attackingArmy, defendingArmy, totalSims);
+        return simulation.Run();
+    })
+    .OrderByDescending(r => r.AttackerWonPercentage)
+    .Take(3);
+
+foreach (SimulationStats sim in optimalCompResults)
+{
+    Console.WriteLine("-------------------------------");
+    sim.Explain();
+}

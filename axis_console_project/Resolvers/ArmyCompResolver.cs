@@ -1,3 +1,4 @@
+using axis_console_project.BaseClasses;
 using axis_console_project.UnitTypes.Air;
 using axis_console_project.UnitTypes.Land;
 
@@ -5,6 +6,21 @@ namespace axis_console_project.Resolvers;
 
 public static class ArmyCompResolver
 {
+    public static IEnumerable<Army> GetPossibleArmies(int maxCost, bool isAttacking = true)
+    {
+        var armyComps = GetAllCombinations(maxCost);
+        var armies = armyComps.Select(c => new Army(
+            isAttacking,
+            c.InfantryCount,
+            c.ArtilleryCount,
+            c.TankCount,
+            c.FighterCount,
+            c.FighterCount,
+            c.BomberCount
+        ));
+        return armies;
+    }
+
     public static List<ArmyComp> GetAllCombinations(int cost)
     {
         var combinations = new List<ArmyComp>();

@@ -14,7 +14,11 @@ public class Simulation(Army attackingArmy, Army defendingArmy, int numberOfSimu
 
     public SimulationStats Run()
     {
-        Stats = new SimulationStats();
+        Stats = new SimulationStats
+        {
+            AttackingArmy = AttackingArmy,
+            DefendingArmy = DefendingArmy,
+        };
 
         for (int i = 0; i < NumberOfSimulations; i++)
         {
@@ -30,6 +34,8 @@ public class Simulation(Army attackingArmy, Army defendingArmy, int numberOfSimu
 
 public class SimulationStats
 {
+    public Army AttackingArmy { get; set; }
+    public Army DefendingArmy { get; set; }
     public int AttackerWon { get; set; }
     public int DefenderWon { get; set; }
     public int Draw { get; set; }
@@ -117,6 +123,9 @@ public class SimulationStats
 
     public void Explain()
     {
+        Console.WriteLine(
+            $"Attacker Army:\n{AttackingArmy.units} \nDefending Army:\n{DefendingArmy.units}"
+        );
         Console.WriteLine(ToString());
         Console.WriteLine($"Average Attacker Remaining Units:\n {AttackerRemainingUnitsAvg}");
         Console.WriteLine($"Average Defender Remaining Units:\n {DefenderRemainingUnitsAvg}");
