@@ -7,50 +7,44 @@ namespace axis_console_project.BaseClasses;
 
 public class Units
 {
-    public List<AntiAir> AntiAirUnits;
-    public List<Infantry> InfantryUnits;
-    public List<Artillery> ArtilleryUnits;
-    public List<Tank> TankUnits;
-    public List<Fighter> FighterUnits;
-    public List<Bomber> BomberUnits;
-    public List<Cruiser> CruiserUnits;
-    public List<Battleship> BattleshipUnits;
+    public List<AntiAir> AntiAirUnits = new();
+    public List<Infantry> InfantryUnits = new();
+    public List<Artillery> ArtilleryUnits = new();
+    public List<Tank> TankUnits = new();
+
+    public List<Fighter> FighterUnits = new();
+    public List<Bomber> BomberUnits = new();
+
+    public List<Transport> TransportUnits = new();
+    public List<Submarine> SubmarineUnits = new();
+    public List<Destroyer> DestroyerUnits = new();
+    public List<Cruiser> CruiserUnits = new();
+    public List<Battleship> BattleshipUnits = new();
+    public List<AircraftCarrier> AircraftCarrierUnits = new();
     public int Cost => GetTotalUnitCost();
     public bool IsAttacking;
 
     public Units(
-        bool isAttacking,
-        int infantryCount,
-        int artilleryCount,
-        int tankCount,
-        int fighterCount,
-        int bomberCount,
-        int antiAirCount,
-        int CruiserCount,
-        int BattleshipCount
+        bool isAttacking = true,
+        int infantryCount = 0,
+        int artilleryCount = 0,
+        int tankCount = 0,
+        int fighterCount = 0,
+        int bomberCount = 0,
+        int antiAirCount = 0,
+        int transportCount = 0,
+        int submarineCount = 0,
+        int destroyerCount = 0,
+        int cruiserCount = 0,
+        int battleshipCount = 0,
+        int aircraftCarrierCount = 0
     )
     {
-        InfantryUnits = new List<Infantry>();
-        ArtilleryUnits = new List<Artillery>();
-        TankUnits = new List<Tank>();
-        FighterUnits = new List<Fighter>();
-        BomberUnits = new List<Bomber>();
-        AntiAirUnits = new List<AntiAir>();
-        CruiserUnits = new List<Cruiser>();
-        BattleshipUnits = new List<Battleship>();
         IsAttacking = isAttacking;
 
         for (int i = 0; i < antiAirCount; i++)
         {
             AntiAirUnits.Add(new AntiAir(isAttacking));
-        }
-        for (int i = 0; i < CruiserCount; i++)
-        {
-            CruiserUnits.Add(new Cruiser(isAttacking, false));
-        }
-        for (int i = 0; i < BattleshipCount; i++)
-        {
-            BattleshipUnits.Add(new Battleship(isAttacking, false));
         }
         for (int i = 0; i < infantryCount; i++)
         {
@@ -79,6 +73,30 @@ public class Units
         {
             BomberUnits.Add(new Bomber(isAttacking));
         }
+        for (int i = 0; i < transportCount; i++)
+        {
+            TransportUnits.Add(new Transport(isAttacking));
+        }
+        for (int i = 0; i < submarineCount; i++)
+        {
+            SubmarineUnits.Add(new Submarine(isAttacking));
+        }
+        for (int i = 0; i < destroyerCount; i++)
+        {
+            DestroyerUnits.Add(new Destroyer(isAttacking));
+        }
+        for (int i = 0; i < cruiserCount; i++)
+        {
+            CruiserUnits.Add(new Cruiser(isAttacking, false));
+        }
+        for (int i = 0; i < battleshipCount; i++)
+        {
+            BattleshipUnits.Add(new Battleship(isAttacking, false));
+        }
+        for (int i = 0; i < aircraftCarrierCount; i++)
+        {
+            AircraftCarrierUnits.Add(new AircraftCarrier(isAttacking));
+        }
     }
 
     private int GetTotalUnitCost()
@@ -96,15 +114,18 @@ public class Units
             .. FighterUnits,
             .. BomberUnits,
             .. AntiAirUnits,
+            .. SubmarineUnits,
+            .. DestroyerUnits,
             .. CruiserUnits,
             .. BattleshipUnits,
+            .. AircraftCarrierUnits,
         ];
         return allUnits;
     }
 
     public override string ToString()
     {
-        return $"Infantry:{InfantryUnits.Count}, Artillery:{ArtilleryUnits.Count}, Tanks:{TankUnits.Count}, Fighters:{FighterUnits.Count}, Bombers:{BomberUnits.Count}, TotalCost:{Cost}";
+        return $"Infantry:{InfantryUnits.Count}, Artillery:{ArtilleryUnits.Count}, Tanks:{TankUnits.Count}, AntiairUnits:{AntiAirUnits.Count}, Fighters:{FighterUnits.Count}, Bombers:{BomberUnits.Count}, Submarines:{SubmarineUnits.Count}, Destroyers:{DestroyerUnits.Count}, Cruisers:{CruiserUnits.Count}, Battleships:{BattleshipUnits.Count}, AircraftCarriers:{AircraftCarrierUnits.Count}, TotalCost:{Cost}";
     }
 
     public Units Clone()
@@ -117,8 +138,11 @@ public class Units
             FighterUnits.Count,
             BomberUnits.Count,
             AntiAirUnits.Count,
+            SubmarineUnits.Count,
+            DestroyerUnits.Count,
             CruiserUnits.Count,
-            BattleshipUnits.Count
+            BattleshipUnits.Count,
+            AircraftCarrierUnits.Count
         );
     }
 }

@@ -1,6 +1,6 @@
 namespace axis_console_project.UnitTypes.Air;
 
-public class AntiAir : Unit
+public class AntiAir : AirUnit
 {
     public static int cost = 6;
 

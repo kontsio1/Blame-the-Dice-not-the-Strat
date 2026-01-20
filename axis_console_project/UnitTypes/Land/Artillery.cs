@@ -1,6 +1,6 @@
 namespace axis_console_project.UnitTypes.Land;
 
-public class Artillery : Unit
+public class Artillery : LandUnit
 {
     public static int cost = 4;
 

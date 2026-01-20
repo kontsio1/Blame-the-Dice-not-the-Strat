@@ -1,6 +1,6 @@
 namespace axis_console_project.UnitTypes.Air;
 
-public class Fighter : Unit
+public class Fighter : AirUnit
 {
     public static int cost = 10;
 

@@ -1,6 +1,6 @@
 namespace axis_console_project.UnitTypes.Land;
 
-public class Infantry : Unit
+public class Infantry : LandUnit
 {
     public static int cost = 3;
 

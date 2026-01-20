@@ -1,3 +1,5 @@
+using axis_console_project.UnitTypes.Land;
+
 namespace axis_console_project.BaseClasses;
 
 public class Battle(Army attackingArmy, Army defendingArmy)
@@ -9,23 +11,26 @@ public class Battle(Army attackingArmy, Army defendingArmy)
     {
         var battleResult = BattleResult.Undecided;
 
-        var attackingNavalUnits = AttackingArmy
-            .GetAllNavalUnits()
-            .Where(unit => unit.ParticipatesInBattle)
-            .ToList();
-        var bombardmentCasualties = 0;
-        foreach (var navalUnit in attackingNavalUnits)
+        if (AttackingArmy.GetType() == typeof(LandArmy))
         {
-            if (navalUnit.CanBombardLandUnits)
+            var attackingNavalUnits = AttackingArmy
+                .GetAllBombardingNavalUnits()
+                .Where(unit => unit.ParticipatesInBattle)
+                .ToList();
+            var bombardmentCasualties = 0;
+            foreach (var navalUnit in attackingNavalUnits)
             {
-                var hit = navalUnit.Fire();
-                if (hit)
+                if (navalUnit.CanBombardLandUnits)
                 {
-                    bombardmentCasualties++;
+                    var hit = navalUnit.Fire();
+                    if (hit)
+                    {
+                        bombardmentCasualties++;
+                    }
                 }
             }
+            DefendingArmy.TakeCasualties(bombardmentCasualties);
         }
-        DefendingArmy.TakeCasualties(bombardmentCasualties);
 
         int round = 1;
 

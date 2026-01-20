@@ -16,11 +16,15 @@ public class Army
         int infantryCount = 0,
         int artilleryCount = 0,
         int tankCount = 0,
+        int antiAirCount = 0,
         int fighterCount = 0,
         int bomberCount = 0,
-        int antiAirCount = 0,
-        int CruiserCount = 0,
-        int BattleshipCount = 0
+        int transportCount = 0,
+        int submarineCount = 0,
+        int destroyerCount = 0,
+        int cruiserCount = 0,
+        int battleshipCount = 0,
+        int aircraftCarrierCount = 0
     )
     {
         this.units = new Units(
@@ -31,8 +35,12 @@ public class Army
             fighterCount,
             bomberCount,
             antiAirCount,
-            CruiserCount,
-            BattleshipCount
+            transportCount,
+            submarineCount,
+            destroyerCount,
+            cruiserCount,
+            battleshipCount,
+            aircraftCarrierCount
         );
         this.isAttacking = isAttacking;
     }
@@ -47,8 +55,12 @@ public class Army
             .. this.units.FighterUnits,
             .. this.units.BomberUnits,
             .. this.units.AntiAirUnits,
+            .. this.units.TransportUnits,
+            .. this.units.SubmarineUnits,
+            .. this.units.DestroyerUnits,
             .. this.units.CruiserUnits,
             .. this.units.BattleshipUnits,
+            .. this.units.AircraftCarrierUnits,
         ];
         return allUnits;
     }
@@ -63,7 +75,7 @@ public class Army
         return GetAllUnits().Any(unit => unit.isAlive && unit.ParticipatesInBattle);
     }
 
-    public List<NavalUnit> GetAllNavalUnits()
+    public List<NavalUnit> GetAllBombardingNavalUnits()
     {
         List<NavalUnit> navalUnits = [.. this.units.CruiserUnits, .. this.units.BattleshipUnits];
         return navalUnits;

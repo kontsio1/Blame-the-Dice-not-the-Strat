@@ -1,6 +1,6 @@
 namespace axis_console_project.UnitTypes.Land;
 
-public class Tank : Unit
+public class Tank : LandUnit
 {
     public static int cost = 5;
 
