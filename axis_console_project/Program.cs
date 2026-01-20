@@ -16,16 +16,18 @@ var totalSims = 10000;
 // simResults.Explain();
 // Console.WriteLine($"{simulation.AttackingArmy.Cost} CP vs {simulation.DefendingArmy.Cost} CP");
 var defendingArmy = new Army(false, 5, 0, 0, 0);
-var armies = ArmyCompResolver.GetPossibleArmies(20, true);
+var armies = ArmyCompResolver.GetPossibleArmies(25, true);
 
 var optimalCompResults = armies
     .Select(attackingArmy =>
     {
         var simulation = new Simulation(attackingArmy, defendingArmy, totalSims);
-        return simulation.Run();
+        var result = simulation.Run();
+        return result;
     })
     .OrderByDescending(r => r.AttackerWonPercentage)
-    .Take(3);
+    .Take(3)
+    .ToList();
 
 foreach (SimulationStats sim in optimalCompResults)
 {

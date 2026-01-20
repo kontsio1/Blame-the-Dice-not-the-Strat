@@ -15,7 +15,6 @@ public static class ArmyCompResolver
             c.ArtilleryCount,
             c.TankCount,
             c.FighterCount,
-            c.FighterCount,
             c.BomberCount
         ));
         return armies;
