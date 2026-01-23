@@ -47,20 +47,21 @@ public abstract class Army
 
     public List<Unit> GetAllUnits()
     {
+        //change order for optimal attack and defence
         List<Unit> allUnits =
         [
+            .. this.units.AntiAirUnits,
             .. this.units.InfantryUnits,
             .. this.units.ArtilleryUnits,
             .. this.units.TankUnits,
             .. this.units.FighterUnits,
             .. this.units.BomberUnits,
-            .. this.units.AntiAirUnits,
             .. this.units.TransportUnits,
             .. this.units.SubmarineUnits,
             .. this.units.DestroyerUnits,
+            .. this.units.AircraftCarrierUnits,
             .. this.units.CruiserUnits,
             .. this.units.BattleshipUnits,
-            .. this.units.AircraftCarrierUnits,
         ];
         return allUnits;
     }

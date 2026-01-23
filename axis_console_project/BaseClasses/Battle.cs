@@ -1,3 +1,5 @@
+using axis_console_project.UnitTypes;
+using axis_console_project.UnitTypes.Air;
 using axis_console_project.UnitTypes.Land;
 
 namespace axis_console_project.BaseClasses;
@@ -11,37 +13,15 @@ public class Battle(Army attackingArmy, Army defendingArmy)
     {
         var battleResult = BattleResult.Undecided;
 
-        if (attackingArmy.GetType() == typeof(LandArmy))
-        {
-            var attackingNavalUnits = attackingArmy.GetAllBombardingNavalUnits();
-            var bombardmentCasualties = 0;
-            foreach (var navalUnit in attackingNavalUnits)
-            {
-                if (navalUnit.CanBombardLandUnits)
-                {
-                    var hit = navalUnit.Fire();
-                    if (hit)
-                    {
-                        bombardmentCasualties++;
-                    }
-                }
-            }
-            defendingArmy.TakeCasualties(bombardmentCasualties);
-        }
+        AntiAirDefense();
+        NavalBombardment();
 
         int round = 1;
 
         while (battleResult == BattleResult.Undecided)
         {
-            // Console.WriteLine($"\n--- Round {round} ---\n");
-
-            // Console.WriteLine($"Attacking Army:");
             var casualtiesD = attackingArmy.Fire();
-            // Console.WriteLine($"Attacking Army inflicted {casualtiesD} casualties.");
-
-            // Console.WriteLine($"\nDefending Army:");
             var casualtiesA = defendingArmy.Fire();
-            // Console.WriteLine($"Defending Army inflicted {casualtiesA} casualties.");
 
             defendingArmy.TakeCasualties(casualtiesD);
             attackingArmy.TakeCasualties(casualtiesA);
@@ -64,19 +44,57 @@ public class Battle(Army attackingArmy, Army defendingArmy)
     {
         if (!attackingArmy.HasUnitsAlive() && !defendingArmy.HasUnitsAlive())
         {
-            // Console.WriteLine("\nBoth Armies have been defeated!");
             return BattleResult.Draw;
         }
         else if (!attackingArmy.HasUnitsAlive())
         {
-            // Console.WriteLine("\nDefending Army wins!");
             return BattleResult.DefenderVictory;
         }
         else if (!defendingArmy.HasUnitsAlive())
         {
-            // Console.WriteLine("\nAttacking Army wins!");
             return BattleResult.AttackerVictory;
         }
         return BattleResult.Undecided;
+    }
+
+    private void NavalBombardment()
+    {
+        if (attackingArmy.GetType() == typeof(LandArmy))
+        {
+            var attackingNavalUnits = attackingArmy.GetAllBombardingNavalUnits();
+            var bombardmentCasualties = 0;
+            foreach (var navalUnit in attackingNavalUnits)
+            {
+                if (navalUnit.CanBombardLandUnits)
+                {
+                    var hit = navalUnit.Fire();
+                    if (hit)
+                    {
+                        bombardmentCasualties++;
+                    }
+                }
+            }
+            defendingArmy.TakeCasualties(bombardmentCasualties);
+        }
+    }
+
+    private void AntiAirDefense()
+    {
+        var antiAir = defendingArmy.GetAllUnits().FirstOrDefault(e => e is AntiAir) as AntiAir;
+        if (attackingArmy.GetType() == typeof(LandArmy) && antiAir != null)
+        {
+            attackingArmy
+                .GetAllAliveUnits()
+                .Where(unit => unit is AirUnit)
+                .Select(u =>
+                {
+                    var hit = antiAir.DefendAgainstAirAttack();
+                    if (hit)
+                    {
+                        u.TakeHit();
+                    }
+                    return u;
+                });
+        }
     }
 }

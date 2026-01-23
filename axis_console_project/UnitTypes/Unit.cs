@@ -15,7 +15,7 @@ public abstract class Unit
     }
     private readonly Random _dice = new Random();
 
-    public bool Fire()
+    public virtual bool Fire()
     {
         if (isAlive)
         {
