@@ -1,10 +1,12 @@
+using axis_console_project.UnitTypes;
+
 namespace axis_console_project.BaseClasses;
 
 public class Simulation(Army attackingArmy, Army defendingArmy, int numberOfSimulations)
 {
-    public SimulationStats Stats { get; set; }
-    public Army AttackingArmy { get; set; } = attackingArmy;
-    public Army DefendingArmy { get; set; } = defendingArmy;
+    public SimulationStats Stats { get; set; } = new();
+    public Army AttackingArmy { get; } = attackingArmy;
+    public Army DefendingArmy { get; } = defendingArmy;
     public int NumberOfSimulations { get; set; } = numberOfSimulations;
 
     public override string ToString()
@@ -19,11 +21,10 @@ public class Simulation(Army attackingArmy, Army defendingArmy, int numberOfSimu
             AttackingArmy = AttackingArmy,
             DefendingArmy = DefendingArmy,
         };
-
         for (int i = 0; i < NumberOfSimulations; i++)
         {
-            Console.WriteLine($"\n--- {(double)i / NumberOfSimulations * 100:F2}% Complete ---\n");
-            var battle = new Battle(attackingArmy.Clone(), defendingArmy.Clone());
+            Console.Write($"\r--- {(double)i / NumberOfSimulations * 100:F2}% Complete ---");
+            var battle = new Battle(AttackingArmy.Clone(), DefendingArmy.Clone());
             var battleResult = battle.Fight();
             Stats.RecordResult(battleResult);
         }
@@ -47,42 +48,36 @@ public class SimulationStats
     public double DrawPercentage => TotalBattles == 0 ? 0 : (Draw * 100.0) / TotalBattles;
     private List<Units> AttackerRemainingUnits { get; set; } = new List<Units>();
     private List<Units> DefenderRemainingUnits { get; set; } = new List<Units>();
+
     public UnitsStats AttackerRemainingUnitsAvg =>
         new UnitsStats(
-            AttackerRemainingUnits.Count == 0
-                ? 0
-                : AttackerRemainingUnits.Average(u => u.InfantryUnits.Count),
-            AttackerRemainingUnits.Count == 0
-                ? 0
-                : AttackerRemainingUnits.Average(u => u.ArtilleryUnits.Count),
-            AttackerRemainingUnits.Count == 0
-                ? 0
-                : AttackerRemainingUnits.Average(u => u.TankUnits.Count),
-            AttackerRemainingUnits.Count == 0
-                ? 0
-                : AttackerRemainingUnits.Average(u => u.FighterUnits.Count),
-            AttackerRemainingUnits.Count == 0
-                ? 0
-                : AttackerRemainingUnits.Average(u => u.BomberUnits.Count)
+            GetAverageUnits(AttackerRemainingUnits, u => u.InfantryUnits),
+            GetAverageUnits(AttackerRemainingUnits, u => u.ArtilleryUnits),
+            GetAverageUnits(AttackerRemainingUnits, u => u.TankUnits),
+            GetAverageUnits(AttackerRemainingUnits, u => u.FighterUnits),
+            GetAverageUnits(AttackerRemainingUnits, u => u.BomberUnits)
         );
     public UnitsStats DefenderRemainingUnitsAvg =>
-        new(
-            DefenderRemainingUnits.Count == 0
-                ? 0
-                : DefenderRemainingUnits.Average(u => u.InfantryUnits.Count),
-            DefenderRemainingUnits.Count == 0
-                ? 0
-                : DefenderRemainingUnits.Average(u => u.ArtilleryUnits.Count),
-            DefenderRemainingUnits.Count == 0
-                ? 0
-                : DefenderRemainingUnits.Average(u => u.TankUnits.Count),
-            DefenderRemainingUnits.Count == 0
-                ? 0
-                : DefenderRemainingUnits.Average(u => u.FighterUnits.Count),
-            DefenderRemainingUnits.Count == 0
-                ? 0
-                : DefenderRemainingUnits.Average(u => u.BomberUnits.Count)
+        new UnitsStats(
+            GetAverageUnits(DefenderRemainingUnits, u => u.InfantryUnits),
+            GetAverageUnits(DefenderRemainingUnits, u => u.ArtilleryUnits),
+            GetAverageUnits(DefenderRemainingUnits, u => u.TankUnits),
+            GetAverageUnits(DefenderRemainingUnits, u => u.FighterUnits),
+            GetAverageUnits(DefenderRemainingUnits, u => u.BomberUnits)
         );
+
+    private double GetAverageUnits(
+        List<Units> unitsList,
+        Func<Units, IEnumerable<Unit>> unitSelector
+    )
+    {
+        return unitsList.Count == 0
+            ? 0
+            : unitsList.Average(u =>
+                unitSelector(u).Where(unit => unit.ParticipatesInBattle).ToList().Count
+            );
+    }
+
     private List<double> AttackerCpLoss { get; set; } = new List<double>();
     private List<double> DefenderCpLoss { get; set; } = new List<double>();
     public double AttackerAvgCpLoss => AttackerCpLoss.Count == 0 ? 0 : AttackerCpLoss.Average();
@@ -110,10 +105,18 @@ public class SimulationStats
                 break;
         }
         AttackerRemainingUnits.Add(info.AttackerRemainingUnits);
-        AttackerCpLoss.Add(info.AttackingArmy.Cost - info.AttackerRemainingUnits.Cost);
+        AttackerCpLoss.Add(
+            info.AttackingArmy.GetAllUnits()
+                .Where(unit => unit.ParticipatesInBattle)
+                .Sum(unit => unit.Cost) - info.AttackerRemainingUnits.Cost
+        );
 
         DefenderRemainingUnits.Add(info.DefenderRemainingUnits);
-        DefenderCpLoss.Add(info.DefendingArmy.Cost - info.DefenderRemainingUnits.Cost);
+        DefenderCpLoss.Add(
+            info.DefendingArmy.GetAllUnits()
+                .Where(unit => unit.ParticipatesInBattle)
+                .Sum(unit => unit.Cost) - info.DefenderRemainingUnits.Cost
+        );
     }
 
     public override string ToString()

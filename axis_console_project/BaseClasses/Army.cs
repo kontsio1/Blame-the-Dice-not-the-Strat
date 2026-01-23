@@ -5,7 +5,7 @@ using axis_console_project.UnitTypes.Sea;
 
 namespace axis_console_project.BaseClasses;
 
-public class Army
+public abstract class Army
 {
     public Units units;
     public int Cost => units.Cost;
@@ -103,7 +103,7 @@ public class Army
 
     public static Units UnitsFromList(List<Unit> unitList)
     {
-        var units = new Units(false, 0, 0, 0, 0, 0, 0, 0, 0);
+        var units = new Units(false);
 
         foreach (var unit in unitList)
         {
@@ -127,29 +127,28 @@ public class Army
                 case AntiAir antiAir:
                     units.AntiAirUnits.Add(antiAir);
                     break;
+                case Transport transport:
+                    units.TransportUnits.Add(transport);
+                    break;
+                case Submarine submarine:
+                    units.SubmarineUnits.Add(submarine);
+                    break;
+                case Destroyer destroyer:
+                    units.DestroyerUnits.Add(destroyer);
+                    break;
                 case Cruiser cruiser:
                     units.CruiserUnits.Add(cruiser);
                     break;
                 case Battleship battleship:
                     units.BattleshipUnits.Add(battleship);
                     break;
+                case AircraftCarrier aircraftCarrier:
+                    units.AircraftCarrierUnits.Add(aircraftCarrier);
+                    break;
             }
         }
         return units;
     }
 
-    public Army Clone()
-    {
-        return new Army(
-            this.isAttacking,
-            units.InfantryUnits.Count,
-            units.ArtilleryUnits.Count,
-            units.TankUnits.Count,
-            units.FighterUnits.Count,
-            units.BomberUnits.Count,
-            units.AntiAirUnits.Count,
-            units.CruiserUnits.Count,
-            units.BattleshipUnits.Count
-        );
-    }
+    public abstract Army Clone();
 }

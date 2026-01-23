@@ -10,8 +10,8 @@ public class LandArmy(
     int fighterCount = 0,
     int bomberCount = 0,
     int antiAirCount = 0,
-    int CruiserCount = 0,
-    int BattleshipCount = 0
+    int cruiserCount = 0,
+    int battleshipCount = 0
 )
     : Army(
         isAttacking,
@@ -21,6 +21,22 @@ public class LandArmy(
         fighterCount,
         bomberCount,
         antiAirCount,
-        CruiserCount,
-        BattleshipCount
-    ) { }
+        cruiserCount: cruiserCount,
+        battleshipCount: battleshipCount
+    )
+{
+    public override LandArmy Clone()
+    {
+        return new LandArmy(
+            this.isAttacking,
+            this.units.InfantryUnits.Count,
+            this.units.ArtilleryUnits.Count,
+            this.units.TankUnits.Count,
+            this.units.FighterUnits.Count,
+            this.units.BomberUnits.Count,
+            this.units.AntiAirUnits.Count,
+            this.units.CruiserUnits.Count,
+            this.units.BattleshipUnits.Count
+        );
+    }
+}

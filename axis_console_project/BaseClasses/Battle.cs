@@ -4,19 +4,16 @@ namespace axis_console_project.BaseClasses;
 
 public class Battle(Army attackingArmy, Army defendingArmy)
 {
-    public Army AttackingArmy = attackingArmy;
-    public Army DefendingArmy = defendingArmy;
+    // public Army attackingArmy = attackingArmy;
+    // public Army defendingArmy = defendingArmy;
 
     public BattleInfo Fight()
     {
         var battleResult = BattleResult.Undecided;
 
-        if (AttackingArmy.GetType() == typeof(LandArmy))
+        if (attackingArmy.GetType() == typeof(LandArmy))
         {
-            var attackingNavalUnits = AttackingArmy
-                .GetAllBombardingNavalUnits()
-                .Where(unit => unit.ParticipatesInBattle)
-                .ToList();
+            var attackingNavalUnits = attackingArmy.GetAllBombardingNavalUnits();
             var bombardmentCasualties = 0;
             foreach (var navalUnit in attackingNavalUnits)
             {
@@ -29,7 +26,7 @@ public class Battle(Army attackingArmy, Army defendingArmy)
                     }
                 }
             }
-            DefendingArmy.TakeCasualties(bombardmentCasualties);
+            defendingArmy.TakeCasualties(bombardmentCasualties);
         }
 
         int round = 1;
@@ -39,45 +36,45 @@ public class Battle(Army attackingArmy, Army defendingArmy)
             // Console.WriteLine($"\n--- Round {round} ---\n");
 
             // Console.WriteLine($"Attacking Army:");
-            var casualtiesD = AttackingArmy.Fire();
+            var casualtiesD = attackingArmy.Fire();
             // Console.WriteLine($"Attacking Army inflicted {casualtiesD} casualties.");
 
             // Console.WriteLine($"\nDefending Army:");
-            var casualtiesA = DefendingArmy.Fire();
+            var casualtiesA = defendingArmy.Fire();
             // Console.WriteLine($"Defending Army inflicted {casualtiesA} casualties.");
 
-            DefendingArmy.TakeCasualties(casualtiesD);
-            AttackingArmy.TakeCasualties(casualtiesA);
+            defendingArmy.TakeCasualties(casualtiesD);
+            attackingArmy.TakeCasualties(casualtiesA);
 
             battleResult = CheckWinConditions();
             round++;
         }
 
         var battleInfo = new BattleInfo(
-            AttackingArmy,
-            DefendingArmy,
+            attackingArmy,
+            defendingArmy,
             battleResult,
-            AttackingArmy.GetAllAliveUnits(),
-            DefendingArmy.GetAllAliveUnits()
+            attackingArmy.GetAllAliveUnits(),
+            defendingArmy.GetAllAliveUnits()
         );
         return battleInfo;
     }
 
     public BattleResult CheckWinConditions()
     {
-        if (!AttackingArmy.HasUnitsAlive() && !DefendingArmy.HasUnitsAlive())
+        if (!attackingArmy.HasUnitsAlive() && !defendingArmy.HasUnitsAlive())
         {
-            Console.WriteLine("\nBoth Armies have been defeated!");
+            // Console.WriteLine("\nBoth Armies have been defeated!");
             return BattleResult.Draw;
         }
-        else if (!AttackingArmy.HasUnitsAlive())
+        else if (!attackingArmy.HasUnitsAlive())
         {
-            Console.WriteLine("\nDefending Army wins!");
+            // Console.WriteLine("\nDefending Army wins!");
             return BattleResult.DefenderVictory;
         }
-        else if (!DefendingArmy.HasUnitsAlive())
+        else if (!defendingArmy.HasUnitsAlive())
         {
-            Console.WriteLine("\nAttacking Army wins!");
+            // Console.WriteLine("\nAttacking Army wins!");
             return BattleResult.AttackerVictory;
         }
         return BattleResult.Undecided;

@@ -19,4 +19,18 @@ public class NavalArmada(
         cruiserCount: cruiserCount,
         battleshipCount: battleshipCount,
         aircraftCarrierCount: carrierCount
-    ) { }
+    )
+{
+    public override NavalArmada Clone()
+    {
+        return new NavalArmada(
+            this.isAttacking,
+            this.units.TransportUnits.Count,
+            this.units.SubmarineUnits.Count,
+            this.units.DestroyerUnits.Count,
+            this.units.CruiserUnits.Count,
+            this.units.BattleshipUnits.Count,
+            this.units.AircraftCarrierUnits.Count
+        );
+    }
+}

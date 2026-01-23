@@ -9,7 +9,8 @@ public static class ArmyCompResolver
     public static IEnumerable<Army> GetPossibleArmies(int maxCost, bool isAttacking = true)
     {
         var armyComps = GetAllCombinations(maxCost);
-        var armies = armyComps.Select(c => new Army(
+        //TODO: change to naval army based on battle type
+        var armies = armyComps.Select(c => new LandArmy(
             isAttacking,
             c.InfantryCount,
             c.ArtilleryCount,

@@ -101,7 +101,7 @@ public class Units
 
     private int GetTotalUnitCost()
     {
-        return GetAllUnits().Where(u => u.ParticipatesInBattle).Sum(unit => unit.Cost);
+        return GetAllUnits().Sum(unit => unit.Cost);
     }
 
     public List<Unit> GetAllUnits()
