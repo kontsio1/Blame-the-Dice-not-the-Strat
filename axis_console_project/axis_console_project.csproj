@@ -7,4 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup>
+  <RootNamespace>axis_console_project</RootNamespace>
+</PropertyGroup>
+
 </Project>

@@ -37,9 +37,9 @@ public class SimulationStats
 {
     public Army AttackingArmy { get; set; }
     public Army DefendingArmy { get; set; }
-    public int AttackerWon { get; set; }
-    public int DefenderWon { get; set; }
-    public int Draw { get; set; }
+    public int AttackerWon { get; set; } = 0;
+    public int DefenderWon { get; set; } = 0;
+    public int Draw { get; set; } = 0;
     public int TotalBattles => AttackerWon + DefenderWon + Draw;
     public double AttackerWonPercentage =>
         TotalBattles == 0 ? 0 : (AttackerWon * 100.0) / TotalBattles;
@@ -83,13 +83,6 @@ public class SimulationStats
     public double AttackerAvgCpLoss => AttackerCpLoss.Count == 0 ? 0 : AttackerCpLoss.Average();
     public double DefenderAvgCpLoss => DefenderCpLoss.Count == 0 ? 0 : DefenderCpLoss.Average();
 
-    public SimulationStats()
-    {
-        AttackerWon = 0;
-        DefenderWon = 0;
-        Draw = 0;
-    }
-
     public void RecordResult(BattleInfo info)
     {
         switch (info.Result)
@@ -119,20 +112,19 @@ public class SimulationStats
         );
     }
 
-    public override string ToString()
-    {
-        return $"Battle Results:\nAttacker Wins: {AttackerWon}, {AttackerWonPercentage:F2}%\nDefender Wins: {DefenderWon}, {DefenderWonPercentage:F2}%\nDraws: {Draw}, {DrawPercentage:F2}%";
-    }
-
     public void Explain()
     {
+        Console.WriteLine("\n--- Simulation Summary ---\n");
+        Console.WriteLine(
+            $"Battle Results:\nAttacker Wins: {AttackerWon}, {AttackerWonPercentage:F2}%\nDefender Wins: {DefenderWon}, {DefenderWonPercentage:F2}%\nDraws: {Draw}, {DrawPercentage:F2}%"
+        );
         Console.WriteLine(
             $"Attacker Army:\n{AttackingArmy.units} \nDefending Army:\n{DefendingArmy.units}"
         );
-        Console.WriteLine(ToString());
         Console.WriteLine($"Average Attacker Remaining Units:\n {AttackerRemainingUnitsAvg}");
         Console.WriteLine($"Average Defender Remaining Units:\n {DefenderRemainingUnitsAvg}");
         Console.WriteLine($"Average Attacker CP Loss: {AttackerAvgCpLoss:F2}");
         Console.WriteLine($"Average Defender CP Loss: {DefenderAvgCpLoss:F2}");
+        Console.WriteLine($"{AttackingArmy.Cost} CP vs {DefendingArmy.Cost} CP");
     }
 }

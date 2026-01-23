@@ -13,9 +13,7 @@ var simulation = new Simulation(
     totalSims
 );
 var simResults = simulation.Run();
-Console.WriteLine(simulation.ToString());
 simResults.Explain();
-Console.WriteLine($"{simulation.AttackingArmy.Cost} CP vs {simulation.DefendingArmy.Cost} CP");
 
 // var defendingArmy = new Army(false, 5, 0, 0, 0);
 // IEnumerable<Army>? armies = ArmyCompResolver.GetPossibleArmies(25, true);
