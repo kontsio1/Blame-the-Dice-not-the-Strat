@@ -25,7 +25,7 @@ public class AntiAir : AirUnit
         if (isAlive)
         {
             int roll = _dice.Next(1, 7);
-            return roll <= 1;
+            return roll <= Attack;
         }
         return false;
     }

@@ -83,18 +83,16 @@ public class Battle(Army attackingArmy, Army defendingArmy)
         var antiAir = defendingArmy.GetAllUnits().FirstOrDefault(e => e is AntiAir) as AntiAir;
         if (attackingArmy.GetType() == typeof(LandArmy) && antiAir != null)
         {
-            attackingArmy
-                .GetAllAliveUnits()
-                .Where(unit => unit is AirUnit)
-                .Select(u =>
+            var air = attackingArmy.GetAllAliveUnits().Where(unit => unit is AirUnit).ToList();
+
+            foreach (var u in air)
+            {
+                var hit = antiAir.DefendAgainstAirAttack();
+                if (hit)
                 {
-                    var hit = antiAir.DefendAgainstAirAttack();
-                    if (hit)
-                    {
-                        u.TakeHit();
-                    }
-                    return u;
-                });
+                    u.TakeHit();
+                }
+            }
         }
     }
 }

@@ -8,8 +8,8 @@ Console.WriteLine("Hello, World!");
 var totalSims = 10000;
 
 var simulation = new Simulation(
-    new LandArmy(true, 1, 1, 1, 0, 1, antiAirCount: 0, cruiserCount: 0, battleshipCount: 3),
-    new LandArmy(false, 5, 0, 0, 0),
+    new LandArmy(true, 1, 1, 1, fighterCount: 10),
+    new LandArmy(false, 15, 0, 0, 0, antiAirCount: 1),
     totalSims
 );
 var simResults = simulation.Run();
