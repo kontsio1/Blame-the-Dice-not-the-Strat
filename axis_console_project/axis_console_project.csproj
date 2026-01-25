@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-  <RootNamespace>axis_console_project</RootNamespace>
-</PropertyGroup>
+    <RootNamespace>axis_console_project</RootNamespace>
+    <InternalsVisibleTo>axis_console_project.Tests</InternalsVisibleTo>
+  </PropertyGroup>
 
 </Project>

@@ -9,7 +9,7 @@ var totalSims = 10000;
 
 var simulation = new Simulation(
     new LandArmy(true, 1, 1, 1, fighterCount: 10),
-    new LandArmy(false, 15, 0, 0, 0, antiAirCount: 1),
+    new LandArmy(false, 15, fighterCount: 1, antiAirCount: 0),
     totalSims
 );
 var simResults = simulation.Run();
