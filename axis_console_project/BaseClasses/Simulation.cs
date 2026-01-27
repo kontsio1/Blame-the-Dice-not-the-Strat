@@ -23,7 +23,7 @@ public class Simulation(Army attackingArmy, Army defendingArmy, int numberOfSimu
         };
         for (int i = 0; i < NumberOfSimulations; i++)
         {
-            Console.Write($"\r--- {(double)i / NumberOfSimulations * 100:F2}% Complete ---");
+            // Console.Write($"\r--- {(double)i / NumberOfSimulations * 100:F2}% Complete ---");
             var battle = new Battle(AttackingArmy.Clone(), DefendingArmy.Clone());
             var battleResult = battle.Fight();
             Stats.RecordResult(battleResult);
