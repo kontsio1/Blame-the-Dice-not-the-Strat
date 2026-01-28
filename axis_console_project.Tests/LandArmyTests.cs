@@ -199,8 +199,8 @@ public class LandArmyTests
             (simStats.DefenderWonPercentage + simStats.DrawPercentage / 2) / 100;
         // Assert
         Assert.Equal(numberOfSims, simStats.TotalBattles);
-        Assert.Equal(0.50, attackerWonOrDraw, 2); // 1 percent accuracy
-        Assert.Equal(0.50, defenderWonOrDraw, 2);
+        attackerWonOrDraw.Should().BeApproximately(0.5, 0.02);
+        defenderWonOrDraw.Should().BeApproximately(0.5, 0.02);
     }
 
     [Fact]
@@ -219,7 +219,7 @@ public class LandArmyTests
             (simStats.DefenderWonPercentage + simStats.DrawPercentage / 2) / 100;
         // Assert
         Assert.Equal(numberOfSims, simStats.TotalBattles);
-        Assert.Equal(0.50, attackerWonOrDraw, 2); // 1 percent accuracy
-        Assert.Equal(0.50, defenderWonOrDraw, 2);
+        attackerWonOrDraw.Should().BeApproximately(0.5, 0.02);
+        defenderWonOrDraw.Should().BeApproximately(0.5, 0.02);
     }
 }
