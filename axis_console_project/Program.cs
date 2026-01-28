@@ -16,6 +16,7 @@ var battleSims = 20000;
 // var simResults = simulation.Run();
 // simResults.Explain();
 
+//-----
 var defendingArmy = new LandArmy(false, 5, 0, 0, 0);
 IEnumerable<Army>? armies = ArmyCompResolver.GetPossibleArmies(24, true).Where(c => c.Cost > 23);
 var i = 0;

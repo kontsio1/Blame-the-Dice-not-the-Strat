@@ -10,6 +10,4 @@ public class Submarine : NavalUnit
         this.Defence = 1;
         this.isAttacking = isAttacking;
     }
-
-    public override bool CanSurpriseAttack => true;
 }

@@ -47,22 +47,44 @@ public abstract class Army
 
     public List<Unit> GetAllUnits()
     {
+        List<Unit> allUnits = [];
         //change order for optimal attack and defence
-        List<Unit> allUnits =
-        [
-            .. this.units.AntiAirUnits,
-            .. this.units.InfantryUnits,
-            .. this.units.ArtilleryUnits,
-            .. this.units.TankUnits,
-            .. this.units.FighterUnits,
-            .. this.units.BomberUnits,
-            .. this.units.TransportUnits,
-            .. this.units.SubmarineUnits,
-            .. this.units.DestroyerUnits,
-            .. this.units.AircraftCarrierUnits,
-            .. this.units.CruiserUnits,
-            .. this.units.BattleshipUnits,
-        ];
+        if (isAttacking)
+        {
+            allUnits =
+            [
+                .. this.units.AntiAirUnits, //0
+                .. this.units.InfantryUnits, //1
+                .. this.units.ArtilleryUnits, //2
+                .. this.units.TankUnits, //3
+                .. this.units.TransportUnits, //0
+                .. this.units.AircraftCarrierUnits, //1
+                .. this.units.SubmarineUnits, //2
+                .. this.units.DestroyerUnits, //2
+                .. this.units.FighterUnits, //3
+                .. this.units.CruiserUnits, //3
+                .. this.units.BomberUnits, //4
+                .. this.units.BattleshipUnits, //4
+            ];
+        }
+        else
+        {
+            allUnits =
+            [
+                .. this.units.AntiAirUnits, //0
+                .. this.units.TransportUnits, //0
+                .. this.units.SubmarineUnits, //1
+                .. this.units.InfantryUnits, //2
+                .. this.units.ArtilleryUnits, //2
+                .. this.units.DestroyerUnits, //2
+                .. this.units.AircraftCarrierUnits, //2
+                .. this.units.BomberUnits, //2
+                .. this.units.TankUnits, //3
+                .. this.units.CruiserUnits, //3
+                .. this.units.FighterUnits, //4
+                .. this.units.BattleshipUnits, //4
+            ];
+        }
         return allUnits;
     }
 
@@ -97,7 +119,7 @@ public abstract class Army
         return casualties;
     }
 
-    public void TakeCasualties(int casualties)
+    public virtual void TakeCasualties(int casualties)
     {
         GetAllAliveUnits().Take(casualties).ToList().ForEach(unit => unit.TakeHit());
     }

@@ -4,7 +4,7 @@ public abstract class Unit
 {
     protected string Name { get; set; } = "";
     public int Cost { get; set; }
-    protected int Health { get; set; } = 1;
+    public int Health { get; set; } = 1;
     protected virtual int Attack { get; set; }
     protected int Defence { get; set; }
     public bool ParticipatesInBattle { get; set; } = true;

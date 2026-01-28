@@ -9,7 +9,9 @@ public class NavalArmada(
     int destroyerCount = 0,
     int cruiserCount = 0,
     int battleshipCount = 0,
-    int carrierCount = 0
+    int carrierCount = 0,
+    int fighterCount = 0,
+    int bomberCount = 0
 )
     : Army(
         isAttacking,
@@ -18,7 +20,9 @@ public class NavalArmada(
         destroyerCount: destroyerCount,
         cruiserCount: cruiserCount,
         battleshipCount: battleshipCount,
-        aircraftCarrierCount: carrierCount
+        aircraftCarrierCount: carrierCount,
+        fighterCount: fighterCount,
+        bomberCount: bomberCount
     )
 {
     public override NavalArmada Clone()
@@ -30,7 +34,21 @@ public class NavalArmada(
             this.units.DestroyerUnits.Count,
             this.units.CruiserUnits.Count,
             this.units.BattleshipUnits.Count,
-            this.units.AircraftCarrierUnits.Count
+            this.units.AircraftCarrierUnits.Count,
+            this.units.BomberUnits.Count,
+            this.units.FighterUnits.Count
         );
+    }
+
+    public bool PreventsSubSupriseAttack =>
+        units.SubmarineUnits.Count != 0 || units.DestroyerUnits.Count != 0;
+
+    public override void TakeCasualties(int casualties)
+    {
+        GetAllAliveUnits()
+            .OrderByDescending(u => u.Health)
+            .Take(casualties)
+            .ToList()
+            .ForEach(unit => unit.TakeHit());
     }
 }

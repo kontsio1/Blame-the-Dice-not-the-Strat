@@ -1,6 +1,7 @@
 using axis_console_project.UnitTypes;
 using axis_console_project.UnitTypes.Air;
 using axis_console_project.UnitTypes.Land;
+using axis_console_project.UnitTypes.Sea;
 
 namespace axis_console_project.BaseClasses;
 
@@ -13,8 +14,15 @@ public class Battle(Army attackingArmy, Army defendingArmy)
     {
         var battleResult = BattleResult.Undecided;
 
-        AntiAirDefense();
-        NavalBombardment();
+        if (attackingArmy is LandArmy)
+        {
+            AntiAirDefense();
+            NavalBombardment();
+        }
+        if (defendingArmy is NavalArmada { PreventsSubSupriseAttack: false })
+        {
+            SubSurpriseAttack();
+        }
 
         int round = 1;
 
@@ -81,7 +89,7 @@ public class Battle(Army attackingArmy, Army defendingArmy)
     private void AntiAirDefense()
     {
         var antiAir = defendingArmy.GetAllUnits().FirstOrDefault(e => e is AntiAir) as AntiAir;
-        if (attackingArmy.GetType() == typeof(LandArmy) && antiAir != null)
+        if (antiAir != null)
         {
             var air = attackingArmy.GetAllAliveUnits().Where(unit => unit is AirUnit).ToList();
 
@@ -94,5 +102,21 @@ public class Battle(Army attackingArmy, Army defendingArmy)
                 }
             }
         }
+    }
+
+    private void SubSurpriseAttack()
+    {
+        var subs = attackingArmy.units.SubmarineUnits.ToList();
+        var casualties = 0;
+
+        foreach (var sub in subs)
+        {
+            var hit = sub.Fire();
+            if (hit)
+            {
+                casualties++;
+            }
+        }
+        defendingArmy.TakeCasualties(casualties);
     }
 }
