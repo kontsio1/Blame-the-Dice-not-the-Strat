@@ -1,5 +1,3 @@
-using axis_console_project.BaseClasses;
-
 namespace axis_console_project.UnitTypes.Land;
 
 public class LandArmy(
@@ -13,7 +11,7 @@ public class LandArmy(
     int cruiserCount = 0,
     int battleshipCount = 0
 )
-    : Army(
+    : Army.Army(
         isAttacking,
         infantryCount,
         artilleryCount,
@@ -28,15 +26,15 @@ public class LandArmy(
     public override LandArmy Clone()
     {
         return new LandArmy(
-            this.isAttacking,
-            this.units.InfantryUnits.Count,
-            this.units.ArtilleryUnits.Count,
-            this.units.TankUnits.Count,
-            this.units.FighterUnits.Count,
-            this.units.BomberUnits.Count,
-            this.units.AntiAirUnits.Count,
-            this.units.CruiserUnits.Count,
-            this.units.BattleshipUnits.Count
+            this.IsAttacking,
+            this.Units.InfantryUnits.Count,
+            this.Units.ArtilleryUnits.Count,
+            this.Units.TankUnits.Count,
+            this.Units.FighterUnits.Count,
+            this.Units.BomberUnits.Count,
+            this.Units.AntiAirUnits.Count,
+            this.Units.CruiserUnits.Count,
+            this.Units.BattleshipUnits.Count
         );
     }
 }

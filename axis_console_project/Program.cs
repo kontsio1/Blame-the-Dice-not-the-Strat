@@ -1,7 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Collections.Generic;
-using axis_console_project.BaseClasses;
+using axis_console_project.Army;
 using axis_console_project.Resolvers;
+using axis_console_project.Simulation;
 using axis_console_project.UnitTypes.Land;
 
 Console.WriteLine("Hello, World!");
@@ -18,7 +19,7 @@ var battleSims = 20000;
 
 //-----
 var defendingArmy = new LandArmy(false, 5, 0, 0, 0);
-IEnumerable<Army>? armies = ArmyCompResolver.GetPossibleArmies(24, true).Where(c => c.Cost > 23);
+IEnumerable<Army>? armies = ArmyBuilder.CreateArmiesFromCost(24, true).Where(c => c.Cost > 23);
 var i = 0;
 
 var totalSims = armies.Count();
@@ -40,6 +41,7 @@ List<SimulationStats> optimalCompResults =
     compBattleResults.Skip(armies.Count() / 2).First(),
     compBattleResults.Last(),
 ];
+//SimulationSuite
 
 foreach (SimulationStats sim in optimalCompResults)
 {

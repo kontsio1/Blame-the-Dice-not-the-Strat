@@ -1,12 +1,11 @@
-using axis_console_project.BaseClasses;
 using axis_console_project.UnitTypes.Air;
 using axis_console_project.UnitTypes.Land;
 
 namespace axis_console_project.Resolvers;
 
-public static class ArmyCompResolver
+public static class ArmyBuilder
 {
-    public static IEnumerable<Army> GetPossibleArmies(int maxCost, bool isAttacking = true)
+    public static IEnumerable<Army.Army> CreateArmiesFromCost(int maxCost, bool isAttacking = true)
     {
         var armyComps = GetAllCombinations(maxCost);
         //TODO: change to naval army based on battle type
@@ -21,7 +20,7 @@ public static class ArmyCompResolver
         return armies;
     }
 
-    public static List<ArmyComp> GetAllCombinations(int cost)
+    private static List<ArmyComp> GetAllCombinations(int cost)
     {
         var combinations = new List<ArmyComp>();
 
@@ -67,7 +66,7 @@ public static class ArmyCompResolver
     }
 }
 
-public class ArmyComp(
+internal class ArmyComp(
     int infantryCount,
     int artilleryCount,
     int tankCount,

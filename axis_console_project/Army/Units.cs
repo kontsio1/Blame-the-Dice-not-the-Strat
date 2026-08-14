@@ -1,9 +1,8 @@
-using axis_console_project.UnitTypes;
 using axis_console_project.UnitTypes.Air;
 using axis_console_project.UnitTypes.Land;
 using axis_console_project.UnitTypes.Sea;
 
-namespace axis_console_project.BaseClasses;
+namespace axis_console_project.Army;
 
 public class Units
 {

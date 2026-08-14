@@ -1,5 +1,3 @@
-using axis_console_project.BaseClasses;
-
 namespace axis_console_project.UnitTypes.Sea;
 
 public class NavalArmada(
@@ -13,7 +11,7 @@ public class NavalArmada(
     int fighterCount = 0,
     int bomberCount = 0
 )
-    : Army(
+    : Army.Army(
         isAttacking,
         transportCount: transportCount,
         submarineCount: submarineCount,
@@ -28,20 +26,20 @@ public class NavalArmada(
     public override NavalArmada Clone()
     {
         return new NavalArmada(
-            this.isAttacking,
-            this.units.TransportUnits.Count,
-            this.units.SubmarineUnits.Count,
-            this.units.DestroyerUnits.Count,
-            this.units.CruiserUnits.Count,
-            this.units.BattleshipUnits.Count,
-            this.units.AircraftCarrierUnits.Count,
-            this.units.BomberUnits.Count,
-            this.units.FighterUnits.Count
+            this.IsAttacking,
+            this.Units.TransportUnits.Count,
+            this.Units.SubmarineUnits.Count,
+            this.Units.DestroyerUnits.Count,
+            this.Units.CruiserUnits.Count,
+            this.Units.BattleshipUnits.Count,
+            this.Units.AircraftCarrierUnits.Count,
+            this.Units.BomberUnits.Count,
+            this.Units.FighterUnits.Count
         );
     }
 
     public bool PreventsSubSupriseAttack =>
-        units.SubmarineUnits.Count != 0 || units.DestroyerUnits.Count != 0;
+        Units.SubmarineUnits.Count != 0 || Units.DestroyerUnits.Count != 0;
 
     public override void TakeCasualties(int casualties)
     {

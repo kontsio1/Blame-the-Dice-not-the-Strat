@@ -1,4 +1,4 @@
-namespace axis_console_project.BaseClasses;
+namespace axis_console_project.Simulation;
 
 public class UnitsStats(
     double infantryUnits = 0,

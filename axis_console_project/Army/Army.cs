@@ -3,13 +3,13 @@ using axis_console_project.UnitTypes.Air;
 using axis_console_project.UnitTypes.Land;
 using axis_console_project.UnitTypes.Sea;
 
-namespace axis_console_project.BaseClasses;
+namespace axis_console_project.Army;
 
 public abstract class Army
 {
-    public Units units;
-    public int Cost => units.Cost;
-    public bool isAttacking;
+    public readonly Units Units;
+    public int Cost => Units.Cost;
+    protected readonly bool IsAttacking;
 
     public Army(
         bool isAttacking = false,
@@ -27,7 +27,7 @@ public abstract class Army
         int aircraftCarrierCount = 0
     )
     {
-        this.units = new Units(
+        this.Units = new Units(
             isAttacking,
             infantryCount,
             artilleryCount,
@@ -42,47 +42,47 @@ public abstract class Army
             battleshipCount,
             aircraftCarrierCount
         );
-        this.isAttacking = isAttacking;
+        this.IsAttacking = isAttacking;
     }
 
     public List<Unit> GetAllUnits()
     {
         List<Unit> allUnits = [];
         //change order for optimal attack and defence
-        if (isAttacking)
+        if (IsAttacking)
         {
             allUnits =
             [
-                .. this.units.AntiAirUnits, //0
-                .. this.units.InfantryUnits, //1
-                .. this.units.ArtilleryUnits, //2
-                .. this.units.TankUnits, //3
-                .. this.units.TransportUnits, //0
-                .. this.units.AircraftCarrierUnits, //1
-                .. this.units.SubmarineUnits, //2
-                .. this.units.DestroyerUnits, //2
-                .. this.units.FighterUnits, //3
-                .. this.units.CruiserUnits, //3
-                .. this.units.BomberUnits, //4
-                .. this.units.BattleshipUnits, //4
+                .. this.Units.AntiAirUnits, //0
+                .. this.Units.InfantryUnits, //1
+                .. this.Units.ArtilleryUnits, //2
+                .. this.Units.TankUnits, //3
+                .. this.Units.TransportUnits, //0
+                .. this.Units.AircraftCarrierUnits, //1
+                .. this.Units.SubmarineUnits, //2
+                .. this.Units.DestroyerUnits, //2
+                .. this.Units.FighterUnits, //3
+                .. this.Units.CruiserUnits, //3
+                .. this.Units.BomberUnits, //4
+                .. this.Units.BattleshipUnits, //4
             ];
         }
         else
         {
             allUnits =
             [
-                .. this.units.AntiAirUnits, //0
-                .. this.units.TransportUnits, //0
-                .. this.units.SubmarineUnits, //1
-                .. this.units.InfantryUnits, //2
-                .. this.units.ArtilleryUnits, //2
-                .. this.units.DestroyerUnits, //2
-                .. this.units.AircraftCarrierUnits, //2
-                .. this.units.BomberUnits, //2
-                .. this.units.TankUnits, //3
-                .. this.units.CruiserUnits, //3
-                .. this.units.FighterUnits, //4
-                .. this.units.BattleshipUnits, //4
+                .. this.Units.AntiAirUnits, //0
+                .. this.Units.TransportUnits, //0
+                .. this.Units.SubmarineUnits, //1
+                .. this.Units.InfantryUnits, //2
+                .. this.Units.ArtilleryUnits, //2
+                .. this.Units.DestroyerUnits, //2
+                .. this.Units.AircraftCarrierUnits, //2
+                .. this.Units.BomberUnits, //2
+                .. this.Units.TankUnits, //3
+                .. this.Units.CruiserUnits, //3
+                .. this.Units.FighterUnits, //4
+                .. this.Units.BattleshipUnits, //4
             ];
         }
         return allUnits;
@@ -100,7 +100,7 @@ public abstract class Army
 
     public List<NavalUnit> GetAllBombardingNavalUnits()
     {
-        List<NavalUnit> navalUnits = [.. this.units.CruiserUnits, .. this.units.BattleshipUnits];
+        List<NavalUnit> navalUnits = [.. this.Units.CruiserUnits, .. this.Units.BattleshipUnits];
         return navalUnits;
     }
 

@@ -1,4 +1,4 @@
-namespace axis_console_project.UnitTypes;
+namespace axis_console_project.Army;
 
 public abstract class Unit
 {
@@ -9,11 +9,8 @@ public abstract class Unit
     protected int Defence { get; set; }
     public bool ParticipatesInBattle { get; set; } = true;
     public Boolean isAttacking { get; set; }
-    public Boolean isAlive
-    {
-        get { return Health > 0; }
-    }
-    private readonly Random _dice = new Random();
+    public Boolean isAlive => Health > 0;
+    private readonly Random _dice = new ();
 
     public virtual bool Fire()
     {

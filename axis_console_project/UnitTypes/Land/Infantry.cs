@@ -13,8 +13,5 @@ public class Infantry : LandUnit
     }
 
     public bool AccompaniedByArtillery { get; set; } = false;
-    protected override int Attack
-    {
-        get { return AccompaniedByArtillery ? 2 : 1; }
-    }
+    protected override int Attack => AccompaniedByArtillery ? 2 : 1;
 }

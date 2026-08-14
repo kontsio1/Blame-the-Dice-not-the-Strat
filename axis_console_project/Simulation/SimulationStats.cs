@@ -1,42 +1,15 @@
+// SimulationStats.cs
+
+using axis_console_project.Army;
+using axis_console_project.Battle;
 using axis_console_project.UnitTypes;
 
-namespace axis_console_project.BaseClasses;
-
-public class Simulation(Army attackingArmy, Army defendingArmy, int numberOfSimulations)
-{
-    public SimulationStats Stats { get; set; } = new();
-    public Army AttackingArmy { get; } = attackingArmy;
-    public Army DefendingArmy { get; } = defendingArmy;
-    public int NumberOfSimulations { get; set; } = numberOfSimulations;
-
-    public override string ToString()
-    {
-        return $"\nSimulation for armies:\n{AttackingArmy.units} \nvs\n {DefendingArmy.units} \nrunning {NumberOfSimulations} simulations.\n";
-    }
-
-    public SimulationStats Run()
-    {
-        Stats = new SimulationStats
-        {
-            AttackingArmy = AttackingArmy,
-            DefendingArmy = DefendingArmy,
-        };
-        for (int i = 0; i < NumberOfSimulations; i++)
-        {
-            // Console.Write($"\r--- {(double)i / NumberOfSimulations * 100:F2}% Complete ---");
-            var battle = new Battle(AttackingArmy.Clone(), DefendingArmy.Clone());
-            var battleResult = battle.Fight();
-            Stats.RecordResult(battleResult);
-        }
-
-        return Stats;
-    }
-}
+namespace axis_console_project.Simulation;
 
 public class SimulationStats
 {
-    public Army AttackingArmy { get; set; }
-    public Army DefendingArmy { get; set; }
+    public Army.Army AttackingArmy { get; set; }
+    public Army.Army DefendingArmy { get; set; }
     public int AttackerWon { get; set; } = 0;
     public int DefenderWon { get; set; } = 0;
     public int Draw { get; set; } = 0;
@@ -83,32 +56,32 @@ public class SimulationStats
     public double AttackerAvgCpLoss => AttackerCpLoss.Count == 0 ? 0 : AttackerCpLoss.Average();
     public double DefenderAvgCpLoss => DefenderCpLoss.Count == 0 ? 0 : DefenderCpLoss.Average();
 
-    public void RecordResult(BattleInfo info)
+    public void RecordResult(BattleResult result)
     {
-        switch (info.Result)
+        switch (result.BattleOutcome)
         {
-            case BattleResult.AttackerVictory:
+            case BattleOutcome.AttackerVictory:
                 AttackerWon++;
                 break;
-            case BattleResult.DefenderVictory:
+            case BattleOutcome.DefenderVictory:
                 DefenderWon++;
                 break;
-            case BattleResult.Draw:
+            case BattleOutcome.Draw:
                 Draw++;
                 break;
         }
-        AttackerRemainingUnits.Add(info.AttackerRemainingUnits);
+        AttackerRemainingUnits.Add(result.AttackerRemainingUnits);
         AttackerCpLoss.Add(
-            info.AttackingArmy.GetAllUnits()
+            result.AttackingArmy.GetAllUnits()
                 .Where(unit => unit.ParticipatesInBattle)
-                .Sum(unit => unit.Cost) - info.AttackerRemainingUnits.Cost
+                .Sum(unit => unit.Cost) - result.AttackerRemainingUnits.Cost
         );
 
-        DefenderRemainingUnits.Add(info.DefenderRemainingUnits);
+        DefenderRemainingUnits.Add(result.DefenderRemainingUnits);
         DefenderCpLoss.Add(
-            info.DefendingArmy.GetAllUnits()
+            result.DefendingArmy.GetAllUnits()
                 .Where(unit => unit.ParticipatesInBattle)
-                .Sum(unit => unit.Cost) - info.DefenderRemainingUnits.Cost
+                .Sum(unit => unit.Cost) - result.DefenderRemainingUnits.Cost
         );
     }
 
@@ -119,7 +92,7 @@ public class SimulationStats
             $"Battle Results:\nAttacker Wins: {AttackerWon}, {AttackerWonPercentage:F2}%\nDefender Wins: {DefenderWon}, {DefenderWonPercentage:F2}%\nDraws: {Draw}, {DrawPercentage:F2}%"
         );
         Console.WriteLine(
-            $"Attacker Army:\n{AttackingArmy.units} \nDefending Army:\n{DefendingArmy.units}"
+            $"Attacker Army:\n{AttackingArmy.Units} \nDefending Army:\n{DefendingArmy.Units}"
         );
         Console.WriteLine($"Average Attacker Remaining Units:\n {AttackerRemainingUnitsAvg}");
         Console.WriteLine($"Average Defender Remaining Units:\n {DefenderRemainingUnitsAvg}");
