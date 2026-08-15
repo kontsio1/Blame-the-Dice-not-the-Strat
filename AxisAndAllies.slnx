@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="axis_console_project.Tests/axis_console_project.Tests.csproj" />
+  <Project Path="axis_console_project/axis_console_project.csproj" />
+</Solution>
