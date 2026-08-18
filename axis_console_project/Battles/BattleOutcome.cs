@@ -1,19 +1,18 @@
-using axis_console_project.Army;
-using axis_console_project.UnitTypes;
+using axis_console_project.Armies;
 
-namespace axis_console_project.Battle;
+namespace axis_console_project.Battles;
 
-using static Army.Army;
+using static Armies.Army;
 
 public class BattleResult(
-    Army.Army attackingArmy,
-    Army.Army defendingArmy,
+    Armies.Army attackingArmy,
+    Armies.Army defendingArmy,
     BattleOutcome battleOutcome,
     List<Unit> attackerRemainingUnits,
     List<Unit> defenderRemainingUnits)
 {
-    public readonly Army.Army AttackingArmy = attackingArmy;
-    public readonly Army.Army DefendingArmy = defendingArmy;
+    public readonly Armies.Army AttackingArmy = attackingArmy;
+    public readonly Armies.Army DefendingArmy = defendingArmy;
     public BattleOutcome BattleOutcome = battleOutcome;
     public Units AttackerRemainingUnits { get; set; } = UnitsFromList(attackerRemainingUnits);
     public Units DefenderRemainingUnits { get; set; } = UnitsFromList(defenderRemainingUnits);

@@ -1,4 +1,4 @@
-using axis_console_project.Simulation;
+using axis_console_project.Simulations;
 using FluentAssertions;
 using Xunit;
 

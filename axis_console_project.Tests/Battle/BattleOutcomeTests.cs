@@ -1,5 +1,5 @@
-using axis_console_project.Army;
-using axis_console_project.Battle;
+using axis_console_project.Armies;
+using axis_console_project.Battles;
 using axis_console_project.UnitTypes.Land;
 using FluentAssertions;
 using Xunit;
@@ -308,3 +308,229 @@ public class BattleResultTests
     #endregion
 }
 
+public class IdenticalArmySelfBattleTests
+{
+    #region Identical Army Self-Battle Tests
+    
+    private readonly int _totalBattles = 50000;
+    
+    [Fact]
+    public void IdenticalArmies_WithTanksOnly_ShouldHaveApprox50PercentVictoryChance()
+    {
+        // Arrange
+        
+        int attackerWins = 0;
+        int defenderWins = 0;
+        int draws = 0;
+
+        // Act
+        for (int i = 0; i < _totalBattles; i++)
+        {
+            var attackingArmy = new LandArmy(isAttacking: true, tankCount: 5);
+            var defendingArmy = new LandArmy(isAttacking: false, tankCount: 5);
+            
+            var battle = new axis_console_project.Battles.Battle(attackingArmy, defendingArmy);
+            var result = battle.Fight();
+
+            if (result.BattleOutcome == BattleOutcome.AttackerVictory)
+                attackerWins++;
+            else if (result.BattleOutcome == BattleOutcome.DefenderVictory)
+                defenderWins++;
+            else
+                draws++;
+        }
+
+        // Assert
+        // Attacker should win approximately 50% of battles (±20% tolerance)
+        var attackerWinPercentage = (attackerWins * 100.0) / _totalBattles;
+        attackerWinPercentage.Should().BeGreaterThan(30).And.BeLessThan(70);
+    }
+
+    [Fact]
+    public void IdenticalArmies_WithArtilleryOnly_ShouldHaveApprox50PercentVictoryChance()
+    {
+        // Arrange
+        
+        int attackerWins = 0;
+        int defenderWins = 0;
+        int draws = 0;
+
+        // Act
+        for (int i = 0; i < _totalBattles; i++)
+        {
+            var attackingArmy = new LandArmy(isAttacking: true, artilleryCount: 5);
+            var defendingArmy = new LandArmy(isAttacking: false, artilleryCount: 5);
+            
+            var battle = new axis_console_project.Battles.Battle(attackingArmy, defendingArmy);
+            var result = battle.Fight();
+
+            if (result.BattleOutcome == BattleOutcome.AttackerVictory)
+                attackerWins++;
+            else if (result.BattleOutcome == BattleOutcome.DefenderVictory)
+                defenderWins++;
+            else
+                draws++;
+        }
+
+        // Assert
+        // Attacker should win approximately 50% of battles (±20% tolerance)
+        var attackerWinPercentage = (attackerWins * 100.0) / _totalBattles;
+        attackerWinPercentage.Should().BeGreaterThan(45).And.BeLessThan(55);
+    }
+
+    [Fact]
+    public void IdenticalArmies_WithMixedUnits_ShouldHaveApprox50PercentVictoryChance()
+    {
+        // Arrange
+        
+        int attackerWins = 0;
+        int defenderWins = 0;
+        int draws = 0;
+
+        // Act
+        for (int i = 0; i < _totalBattles; i++)
+        {
+            var attackingArmy = new LandArmy(isAttacking: true, tankCount: 3, artilleryCount: 2);
+            var defendingArmy = new LandArmy(isAttacking: false, tankCount: 3, artilleryCount: 2);
+            
+            var battle = new axis_console_project.Battles.Battle(attackingArmy, defendingArmy);
+            var result = battle.Fight();
+
+            if (result.BattleOutcome == BattleOutcome.AttackerVictory)
+                attackerWins++;
+            else if (result.BattleOutcome == BattleOutcome.DefenderVictory)
+                defenderWins++;
+            else
+                draws++;
+        }
+
+        // Assert
+        // Attacker should win approximately 50% of battles (±20% tolerance)
+        var attackerWinPercentage = (attackerWins * 100.0) / _totalBattles;
+        attackerWinPercentage.Should().BeGreaterThan(45).And.BeLessThan(55);
+    }
+
+    [Fact]
+    public void IdenticalArmies_WithTanksAndArtillery_ShouldHaveApprox50PercentVictoryChance()
+    {
+        // Arrange
+        
+        int attackerWins = 0;
+        int defenderWins = 0;
+        int draws = 0;
+
+        // Act
+        for (int i = 0; i < _totalBattles; i++)
+        {
+            var attackingArmy = new LandArmy(isAttacking: true, tankCount: 4, artilleryCount: 3);
+            var defendingArmy = new LandArmy(isAttacking: false, tankCount: 4, artilleryCount: 3);
+            
+            var battle = new axis_console_project.Battles.Battle(attackingArmy, defendingArmy);
+            var result = battle.Fight();
+
+            if (result.BattleOutcome == BattleOutcome.AttackerVictory)
+                attackerWins++;
+            else if (result.BattleOutcome == BattleOutcome.DefenderVictory)
+                defenderWins++;
+            else
+                draws++;
+        }
+
+        // Assert
+        // Attacker should win approximately 50% of battles (±20% tolerance)
+        var attackerWinPercentage = (attackerWins * 100.0) / _totalBattles;
+        attackerWinPercentage.Should().BeGreaterThan(45).And.BeLessThan(55);
+    }
+
+    [Fact]
+    public void IdenticalArmies_LargeScale_ShouldHaveApprox50PercentVictoryChance()
+    {
+        // Arrange
+        int attackerWins = 0;
+        int defenderWins = 0;
+        int draws = 0;
+
+        // Act
+        for (int i = 0; i < _totalBattles; i++)
+        {
+            var attackingArmy = new LandArmy(isAttacking: true, tankCount: 10, artilleryCount: 5);
+            var defendingArmy = new LandArmy(isAttacking: false, tankCount: 10, artilleryCount: 5);
+            
+            var battle = new axis_console_project.Battles.Battle(attackingArmy, defendingArmy);
+            var result = battle.Fight();
+
+            if (result.BattleOutcome == BattleOutcome.AttackerVictory)
+                attackerWins++;
+            else if (result.BattleOutcome == BattleOutcome.DefenderVictory)
+                defenderWins++;
+            else
+                draws++;
+        }
+
+        // Assert
+        // Attacker should win approximately 50% of battles (±20% tolerance)
+        var attackerWinPercentage = (attackerWins * 100.0) / _totalBattles;
+        attackerWinPercentage.Should().BeGreaterThan(45).And.BeLessThan(55);
+    }
+
+    [Fact]
+    public void IdenticalArmies_WithSmallTankForce_ShouldHaveApprox50PercentVictoryChance()
+    {
+        // Arrange
+        
+        int attackerWins = 0;
+        int defenderWins = 0;
+        int draws = 0;
+
+        // Act
+        for (int i = 0; i < _totalBattles; i++)
+        {
+            var attackingArmy = new LandArmy(isAttacking: true, tankCount: 2);
+            var defendingArmy = new LandArmy(isAttacking: false, tankCount: 2);
+            
+            var battle = new axis_console_project.Battles.Battle(attackingArmy, defendingArmy);
+            var result = battle.Fight();
+
+            if (result.BattleOutcome == BattleOutcome.AttackerVictory)
+                attackerWins++;
+            else if (result.BattleOutcome == BattleOutcome.DefenderVictory)
+                defenderWins++;
+            else
+                draws++;
+        }
+
+        // Assert
+        // Attacker should win approximately 50% of battles (±20% tolerance)
+        var attackerWinPercentage = (attackerWins * 100.0) / _totalBattles;
+        attackerWinPercentage.Should().BeGreaterThan(40).And.BeLessThan(60);
+    }
+
+    [Fact]
+    public void IdenticalArmies_ShouldNotHaveDominantOutcome()
+    {
+        // Arrange - Run multiple battles to ensure no one side dominates
+        int _totalBattles = 50;
+        int attackerWins = 0;
+
+        // Act
+        for (int i = 0; i < _totalBattles; i++)
+        {
+            var attackingArmy = new LandArmy(isAttacking: true, tankCount: 5);
+            var defendingArmy = new LandArmy(isAttacking: false, tankCount: 5);
+            
+            var battle = new Battles.Battle(attackingArmy, defendingArmy);
+            var result = battle.Fight();
+
+            if (result.BattleOutcome == BattleOutcome.AttackerVictory)
+                attackerWins++;
+        }
+
+        var attackerWinPercentage = (attackerWins * 100.0) / _totalBattles;
+
+        // Assert
+        // Neither side should consistently win more than 75% or win less than 25%
+        attackerWinPercentage.Should().BeGreaterThan(40).And.BeLessThan(60);
+    }
+    
+    #endregion
+}

@@ -1,3 +1,6 @@
+using axis_console_project.Armies;
+using axis_console_project.Resolvers;
+
 namespace axis_console_project.UnitTypes.Land;
 
 public class LandArmy(
@@ -11,7 +14,7 @@ public class LandArmy(
     int cruiserCount = 0,
     int battleshipCount = 0
 )
-    : Army.Army(
+    : Army(
         isAttacking,
         infantryCount,
         artilleryCount,
@@ -36,5 +39,9 @@ public class LandArmy(
             this.Units.CruiserUnits.Count,
             this.Units.BattleshipUnits.Count
         );
+    }
+    public override string ToString()
+    {
+        return new LandArmyComp(this).ToString();
     }
 }

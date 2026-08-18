@@ -11,7 +11,7 @@ public class NavalArmada(
     int fighterCount = 0,
     int bomberCount = 0
 )
-    : Army.Army(
+    : Armies.Army(
         isAttacking,
         transportCount: transportCount,
         submarineCount: submarineCount,

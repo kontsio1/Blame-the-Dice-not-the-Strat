@@ -1,4 +1,4 @@
-using axis_console_project.Army;
+using axis_console_project.Armies;
 
 namespace axis_console_project.UnitTypes.Land;
 

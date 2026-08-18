@@ -2,13 +2,13 @@ namespace axis_console_project.UnitTypes.Air;
 
 public class AntiAir : AirUnit
 {
-    public static int cost = 6;
+    public const int UnitCost = 6;
     private readonly Random _dice = new();
 
     public AntiAir(bool isAttacking)
     {
         this.Name = "Anti-Air";
-        this.Cost = cost;
+        Cost = UnitCost;
         this.Attack = 1;
         this.Defence = 0;
         this.isAttacking = isAttacking;

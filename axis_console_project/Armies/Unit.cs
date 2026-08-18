@@ -1,4 +1,4 @@
-namespace axis_console_project.Army;
+namespace axis_console_project.Armies;
 
 public abstract class Unit
 {

@@ -2,12 +2,12 @@ namespace axis_console_project.UnitTypes.Air;
 
 public class Fighter : AirUnit
 {
-    public static int cost = 10;
+    public const int UnitCost = 10;
 
     public Fighter(bool isAttacking)
     {
         this.Name = "Fighter";
-        this.Cost = cost;
+        Cost = UnitCost;
         this.Attack = 3;
         this.Defence = 4;
         this.isAttacking = isAttacking;

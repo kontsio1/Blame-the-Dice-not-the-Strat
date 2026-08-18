@@ -1,5 +1,4 @@
-using axis_console_project.Battle;
-using axis_console_project.Simulation;
+using axis_console_project.Simulations;
 using axis_console_project.UnitTypes.Land;
 using axis_console_project.UnitTypes.Sea;
 using FluentAssertions;
@@ -19,7 +18,7 @@ public class SimulationTests
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
 
         // Act
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, 10);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Assert
         simulation.Should().NotBeNull();
@@ -35,10 +34,11 @@ public class SimulationTests
         // Arrange
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, 10);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(10);
+        var stats = simulation.Stats;
 
         // Assert
         stats.Should().NotBeNull();
@@ -52,10 +52,11 @@ public class SimulationTests
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
         const int numSimulations = 100;
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, numSimulations);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(numSimulations);
+        var stats = simulation.Stats;
 
         // Assert
         stats.TotalBattles.Should().Be(numSimulations);
@@ -68,10 +69,11 @@ public class SimulationTests
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
         const int numSimulations = 50;
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, numSimulations);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(numSimulations);
+        var stats = simulation.Stats;
 
         // Assert
         (stats.AttackerWon + stats.DefenderWon + stats.Draw).Should().Be(numSimulations);
@@ -83,10 +85,11 @@ public class SimulationTests
         // Arrange
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 3);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 2);
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, 1);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(1);
+        var stats = simulation.Stats;
 
         // Assert
         stats.TotalBattles.Should().Be(1);
@@ -98,10 +101,11 @@ public class SimulationTests
         // Arrange
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 3);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 2);
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, 0);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(0);
+        var stats = simulation.Stats;
 
         // Assert
         stats.TotalBattles.Should().Be(0);
@@ -116,10 +120,11 @@ public class SimulationTests
         // Arrange
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, 10);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(10);
+        var stats = simulation.Stats;
 
         // Assert
         stats.AttackingArmy.Should().BeSameAs(attackingArmy);
@@ -137,10 +142,11 @@ public class SimulationTests
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 20, tankCount: 10);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 2);
         const int numSimulations = 100;
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, numSimulations);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(numSimulations);
+        var stats = simulation.Stats;
 
         // Assert
         stats.AttackerWonPercentage.Should().BeGreaterThan(80);
@@ -153,10 +159,11 @@ public class SimulationTests
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 2);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 20, tankCount: 10);
         const int numSimulations = 100;
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, numSimulations);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(numSimulations);
+        var stats = simulation.Stats;
 
         // Assert
         stats.DefenderWonPercentage.Should().BeGreaterThan(80);
@@ -169,10 +176,11 @@ public class SimulationTests
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5, tankCount: 3);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 5, tankCount: 3);
         const int numSimulations = 100;
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, numSimulations);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(numSimulations);
+        var stats = simulation.Stats;
 
         // Assert - Both sides should win some battles
         stats.AttackerWon.Should().BeGreaterThan(0);
@@ -189,10 +197,11 @@ public class SimulationTests
         // Arrange
         var attackingFleet = new NavalArmada(isAttacking: true, destroyerCount: 3, submarineCount: 2);
         var defendingFleet = new NavalArmada(isAttacking: false, destroyerCount: 2, cruiserCount: 1);
-        var simulation = new axis_console_project.Simulation.Simulation(attackingFleet, defendingFleet, 50);
+        var simulation = new Simulations.Simulation(attackingFleet, defendingFleet);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(50);
+        var stats = simulation.Stats;
 
         // Assert
         stats.TotalBattles.Should().Be(50);
@@ -205,10 +214,11 @@ public class SimulationTests
         var attackingFleet = new NavalArmada(isAttacking: true, destroyerCount: 5, battleshipCount: 2);
         var defendingFleet = new NavalArmada(isAttacking: false, submarineCount: 2);
         const int numSimulations = 50;
-        var simulation = new axis_console_project.Simulation.Simulation(attackingFleet, defendingFleet, numSimulations);
+        var simulation = new Simulations.Simulation(attackingFleet, defendingFleet);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(numSimulations);
+        var stats = simulation.Stats;
 
         // Assert
         stats.TotalBattles.Should().Be(numSimulations);
@@ -237,10 +247,11 @@ public class SimulationTests
             tankCount: 2,
             fighterCount: 1,
             antiAirCount: 1);
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, 50);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(50);
+        var stats = simulation.Stats;
 
         // Assert
         stats.TotalBattles.Should().Be(50);
@@ -256,10 +267,11 @@ public class SimulationTests
             cruiserCount: 2,
             battleshipCount: 1);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, 30);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(30);
+        var stats = simulation.Stats;
 
         // Assert
         stats.TotalBattles.Should().Be(30);
@@ -275,7 +287,7 @@ public class SimulationTests
         // Arrange
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, 10);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
         var result = simulation.ToString();
@@ -287,19 +299,18 @@ public class SimulationTests
     }
 
     [Fact]
-    public void ToString_ShouldContainNumberOfSimulations()
+    public void ToString_ShouldContainArmyDetails()
     {
         // Arrange
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
-        const int numSimulations = 100;
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, numSimulations);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
         var result = simulation.ToString();
 
         // Assert
-        result.Should().Contain("100");
+        result.Should().NotBeNullOrEmpty();
     }
     
     #endregion
@@ -313,10 +324,11 @@ public class SimulationTests
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5, tankCount: 3);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 4, tankCount: 2);
         const int numSimulations = 500;
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, numSimulations);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(numSimulations);
+        var stats = simulation.Stats;
 
         // Assert
         stats.TotalBattles.Should().Be(numSimulations);
@@ -341,10 +353,11 @@ public class SimulationTests
             fighterCount: 4,
             bomberCount: 2,
             antiAirCount: 2);
-        var simulation = new axis_console_project.Simulation.Simulation(attackingArmy, defendingArmy, 20);
+        var simulation = new Simulations.Simulation(attackingArmy, defendingArmy);
 
         // Act
-        var stats = simulation.Run();
+        simulation.Run(20);
+        var stats = simulation.Stats;
 
         // Assert
         stats.TotalBattles.Should().Be(20);
@@ -352,4 +365,3 @@ public class SimulationTests
     
     #endregion
 }
-

@@ -1,15 +1,14 @@
 // SimulationStats.cs
 
-using axis_console_project.Army;
-using axis_console_project.Battle;
-using axis_console_project.UnitTypes;
+using axis_console_project.Armies;
+using axis_console_project.Battles;
 
-namespace axis_console_project.Simulation;
+namespace axis_console_project.Simulations;
 
-public class SimulationStats
+public class SimulationStats(Army? attackingArmy = null, Army? defendingArmy = null)
 {
-    public Army.Army AttackingArmy { get; set; }
-    public Army.Army DefendingArmy { get; set; }
+    public Army? AttackingArmy { get; set; } = attackingArmy;
+    public Army? DefendingArmy { get; set; } =  defendingArmy;
     public int AttackerWon { get; set; } = 0;
     public int DefenderWon { get; set; } = 0;
     public int Draw { get; set; } = 0;

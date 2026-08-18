@@ -3,14 +3,14 @@ using axis_console_project.UnitTypes.Air;
 using axis_console_project.UnitTypes.Land;
 using axis_console_project.UnitTypes.Sea;
 
-namespace axis_console_project.Battle;
+namespace axis_console_project.Battles;
 
 public class Battle
 {
-    public readonly Army.Army AttackingArmy;
-    public readonly Army.Army DefendingArmy;
+    public readonly Armies.Army AttackingArmy;
+    public readonly Armies.Army DefendingArmy;
     public BattleOutcome? Outcome;
-    public Battle(Army.Army attackingArmy, Army.Army defendingArmy)
+    public Battle(Armies.Army attackingArmy, Armies.Army defendingArmy)
     {
         this.AttackingArmy = attackingArmy;
         this.DefendingArmy = defendingArmy;

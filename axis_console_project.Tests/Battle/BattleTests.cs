@@ -1,4 +1,4 @@
-using axis_console_project.Battle;
+using axis_console_project.Battles;
 using axis_console_project.UnitTypes.Land;
 using axis_console_project.UnitTypes.Sea;
 using FluentAssertions;
@@ -18,7 +18,7 @@ public class BattleTests
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 2);
 
         // Act
-        var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+        var battle = new Battles.Battle(attackingArmy, defendingArmy);
 
         // Assert
         battle.AttackingArmy.Should().BeSameAs(attackingArmy);
@@ -32,7 +32,7 @@ public class BattleTests
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 2);
 
         // Act
-        var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+        var battle = new Battles.Battle(attackingArmy, defendingArmy);
 
         // Assert
         battle.DefendingArmy.Should().BeSameAs(defendingArmy);
@@ -46,7 +46,7 @@ public class BattleTests
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 2);
 
         // Act
-        var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+        var battle = new Battles.Battle(attackingArmy, defendingArmy);
 
         // Assert
         battle.Outcome.Should().BeNull();
@@ -62,7 +62,7 @@ public class BattleTests
         // Arrange
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 3);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 2);
-        var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+        var battle = new Battles.Battle(attackingArmy, defendingArmy);
 
         // Act
         var result = battle.Fight();
@@ -78,7 +78,7 @@ public class BattleTests
         // Arrange
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 3);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 2);
-        var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+        var battle = new Battles.Battle(attackingArmy, defendingArmy);
 
         // Act
         battle.Fight();
@@ -99,7 +99,7 @@ public class BattleTests
         {
             var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 10, tankCount: 5);
             var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 1);
-            var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+            var battle = new Battles.Battle(attackingArmy, defendingArmy);
             var result = battle.Fight();
 
             if (result.BattleOutcome == BattleOutcome.AttackerVictory)
@@ -121,7 +121,7 @@ public class BattleTests
         {
             var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 1);
             var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 10, tankCount: 5);
-            var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+            var battle = new Battles.Battle(attackingArmy, defendingArmy);
             var result = battle.Fight();
 
             if (result.BattleOutcome == BattleOutcome.DefenderVictory)
@@ -138,7 +138,7 @@ public class BattleTests
         // Arrange
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 3);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 2);
-        var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+        var battle = new Battles.Battle(attackingArmy, defendingArmy);
 
         // Act
         var result = battle.Fight();
@@ -157,7 +157,7 @@ public class BattleTests
         {
             var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5, tankCount: 3);
             var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 2);
-            var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+            var battle = new Battles.Battle(attackingArmy, defendingArmy);
             result = battle.Fight();
             
             if (result.BattleOutcome == BattleOutcome.AttackerVictory)
@@ -179,7 +179,7 @@ public class BattleTests
         {
             var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 2);
             var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 5, tankCount: 3);
-            var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+            var battle = new Battles.Battle(attackingArmy, defendingArmy);
             result = battle.Fight();
             
             if (result.BattleOutcome == BattleOutcome.DefenderVictory)
@@ -202,7 +202,7 @@ public class BattleTests
         // Arrange
         var attackingFleet = new NavalArmada(isAttacking: true, destroyerCount: 3, submarineCount: 2);
         var defendingFleet = new NavalArmada(isAttacking: false, destroyerCount: 2, cruiserCount: 1);
-        var battle = new axis_console_project.Battle.Battle(attackingFleet, defendingFleet);
+        var battle = new Battles.Battle(attackingFleet, defendingFleet);
 
         // Act
         var result = battle.Fight();
@@ -218,7 +218,7 @@ public class BattleTests
         // Arrange - Attacker has subs, defender has no destroyers or subs
         var attackingFleet = new NavalArmada(isAttacking: true, submarineCount: 5);
         var defendingFleet = new NavalArmada(isAttacking: false, cruiserCount: 2);
-        var battle = new axis_console_project.Battle.Battle(attackingFleet, defendingFleet);
+        var battle = new Battles.Battle(attackingFleet, defendingFleet);
 
         // Act
         var result = battle.Fight();
@@ -260,7 +260,7 @@ public class BattleTests
         // Arrange - Land army with naval support
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5, cruiserCount: 2, battleshipCount: 1);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
-        var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+        var battle = new Battles.Battle(attackingArmy, defendingArmy);
 
         // Act
         var result = battle.Fight();
@@ -276,7 +276,7 @@ public class BattleTests
         // Arrange - Attacker has air units, defender has anti-air
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 3, fighterCount: 2, bomberCount: 1);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 5, antiAirCount: 1);
-        var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+        var battle = new Battles.Battle(attackingArmy, defendingArmy);
 
         // Act
         var result = battle.Fight();
@@ -296,7 +296,7 @@ public class BattleTests
         // Arrange - Single unit on each side
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 1);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 1);
-        var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+        var battle = new Battles.Battle(attackingArmy, defendingArmy);
 
         // Act
         var result = battle.Fight();
@@ -316,7 +316,7 @@ public class BattleTests
         {
             var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 3, tankCount: 2);
             var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3, tankCount: 2);
-            var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+            var battle = new Battles.Battle(attackingArmy, defendingArmy);
             var result = battle.Fight();
             outcomes.Add(result.BattleOutcome);
         }
@@ -342,7 +342,7 @@ public class BattleTests
             artilleryCount: 1, 
             tankCount: 1, 
             fighterCount: 2);
-        var battle = new axis_console_project.Battle.Battle(attackingArmy, defendingArmy);
+        var battle = new Battles.Battle(attackingArmy, defendingArmy);
 
         // Act
         var result = battle.Fight();

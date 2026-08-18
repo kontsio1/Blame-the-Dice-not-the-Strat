@@ -2,12 +2,12 @@ namespace axis_console_project.UnitTypes.Land;
 
 public class Infantry : LandUnit
 {
-    public static int cost = 3;
+    public const int UnitCost = 3;
 
     public Infantry(bool isAttacking)
     {
         this.Name = $"Infantry";
-        this.Cost = cost;
+        this.Cost = UnitCost;
         this.Defence = 2;
         this.isAttacking = isAttacking;
     }

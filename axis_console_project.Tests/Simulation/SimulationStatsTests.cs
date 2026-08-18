@@ -1,6 +1,6 @@
-using axis_console_project.Army;
-using axis_console_project.Battle;
-using axis_console_project.Simulation;
+using axis_console_project.Armies;
+using axis_console_project.Battles;
+using axis_console_project.Simulations;
 using axis_console_project.UnitTypes.Land;
 using FluentAssertions;
 using Xunit;

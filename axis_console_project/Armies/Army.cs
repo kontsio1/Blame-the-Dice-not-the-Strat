@@ -1,15 +1,17 @@
+using axis_console_project.Resolvers;
 using axis_console_project.UnitTypes;
 using axis_console_project.UnitTypes.Air;
 using axis_console_project.UnitTypes.Land;
 using axis_console_project.UnitTypes.Sea;
 
-namespace axis_console_project.Army;
+namespace axis_console_project.Armies;
 
 public abstract class Army
 {
     public readonly Units Units;
     public int Cost => Units.Cost;
-    protected readonly bool IsAttacking;
+    public readonly bool IsAttacking;
+    public bool IsDefending => !IsAttacking;
 
     public Army(
         bool isAttacking = false,
@@ -172,6 +174,5 @@ public abstract class Army
         }
         return units;
     }
-
     public abstract Army Clone();
 }
