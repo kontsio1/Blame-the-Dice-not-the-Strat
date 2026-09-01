@@ -1,3 +1,4 @@
+using axis_console_project.Armies;
 using axis_console_project.UnitTypes;
 using axis_console_project.UnitTypes.Air;
 using axis_console_project.UnitTypes.Land;
@@ -7,10 +8,10 @@ namespace axis_console_project.Battles;
 
 public class Battle
 {
-    public readonly Armies.Army AttackingArmy;
-    public readonly Armies.Army DefendingArmy;
+    public readonly Army AttackingArmy;
+    public readonly Army DefendingArmy;
     public BattleOutcome? Outcome;
-    public Battle(Armies.Army attackingArmy, Armies.Army defendingArmy)
+    public Battle(Army attackingArmy, Army defendingArmy)
     {
         this.AttackingArmy = attackingArmy;
         this.DefendingArmy = defendingArmy;

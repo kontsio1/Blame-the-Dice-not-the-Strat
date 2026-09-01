@@ -20,7 +20,13 @@ public class SimulationStats(Army? attackingArmy = null, Army? defendingArmy = n
     public double DrawPercentage => TotalBattles == 0 ? 0 : (Draw * 100.0) / TotalBattles;
     private List<Units> AttackerRemainingUnits { get; set; } = new List<Units>();
     private List<Units> DefenderRemainingUnits { get; set; } = new List<Units>();
-
+    private List<double> AttackerCpLoss { get; set; } = new List<double>();
+    private List<double> DefenderCpLoss { get; set; } = new List<double>();
+    public double AttackerAvgCpLoss => AttackerCpLoss.Count == 0 ? 0 : AttackerCpLoss.Average();
+    public double DefenderAvgCpLoss => DefenderCpLoss.Count == 0 ? 0 : DefenderCpLoss.Average();
+    public double WonPercentage(bool forAttacker = true) => forAttacker ? AttackerWonPercentage : DefenderWonPercentage;
+    public double AvgCpLoss(bool forAttacker = true) => forAttacker ? AttackerAvgCpLoss : DefenderAvgCpLoss;
+    public double RemainingUnitsAvg(bool forAttacker = true) => forAttacker ? AttackerRemainingUnits.Count : DefenderRemainingUnits.Count;
     public UnitsStats AttackerRemainingUnitsAvg =>
         new UnitsStats(
             GetAverageUnits(AttackerRemainingUnits, u => u.InfantryUnits),
@@ -49,11 +55,6 @@ public class SimulationStats(Army? attackingArmy = null, Army? defendingArmy = n
                 unitSelector(u).Where(unit => unit.ParticipatesInBattle).ToList().Count
             );
     }
-
-    private List<double> AttackerCpLoss { get; set; } = new List<double>();
-    private List<double> DefenderCpLoss { get; set; } = new List<double>();
-    public double AttackerAvgCpLoss => AttackerCpLoss.Count == 0 ? 0 : AttackerCpLoss.Average();
-    public double DefenderAvgCpLoss => DefenderCpLoss.Count == 0 ? 0 : DefenderCpLoss.Average();
 
     public void RecordResult(BattleResult result)
     {

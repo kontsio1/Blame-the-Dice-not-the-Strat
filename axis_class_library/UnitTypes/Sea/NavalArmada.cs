@@ -1,3 +1,5 @@
+using axis_console_project.Armies;
+
 namespace axis_console_project.UnitTypes.Sea;
 
 public class NavalArmada(
@@ -11,7 +13,7 @@ public class NavalArmada(
     int fighterCount = 0,
     int bomberCount = 0
 )
-    : Armies.Army(
+    : Army(
         isAttacking,
         transportCount: transportCount,
         submarineCount: submarineCount,
@@ -48,5 +50,10 @@ public class NavalArmada(
             .Take(casualties)
             .ToList()
             .ForEach(unit => unit.TakeHit());
+    }
+    
+    public override string ToString()
+    {
+        return new NavalArmadaComp(this).ToString();
     }
 }
