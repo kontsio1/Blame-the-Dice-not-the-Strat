@@ -29,19 +29,19 @@ public class SimulationStats(Army? attackingArmy = null, Army? defendingArmy = n
     public double RemainingUnitsAvg(bool forAttacker = true) => forAttacker ? AttackerRemainingUnits.Count : DefenderRemainingUnits.Count;
     public UnitsStats AttackerRemainingUnitsAvg =>
         new UnitsStats(
-            GetAverageUnits(AttackerRemainingUnits, u => u.InfantryUnits),
-            GetAverageUnits(AttackerRemainingUnits, u => u.ArtilleryUnits),
-            GetAverageUnits(AttackerRemainingUnits, u => u.TankUnits),
-            GetAverageUnits(AttackerRemainingUnits, u => u.FighterUnits),
-            GetAverageUnits(AttackerRemainingUnits, u => u.BomberUnits)
+            infantryUnits: GetAverageUnits(AttackerRemainingUnits, u => u.InfantryUnits),
+            artilleryUnits: GetAverageUnits(AttackerRemainingUnits, u => u.ArtilleryUnits),
+            tankUnits: GetAverageUnits(AttackerRemainingUnits, u => u.TankUnits),
+            fighterUnits: GetAverageUnits(AttackerRemainingUnits, u => u.FighterUnits),
+            bomberUnits: GetAverageUnits(AttackerRemainingUnits, u => u.BomberUnits)
         );
     public UnitsStats DefenderRemainingUnitsAvg =>
         new UnitsStats(
-            GetAverageUnits(DefenderRemainingUnits, u => u.InfantryUnits),
-            GetAverageUnits(DefenderRemainingUnits, u => u.ArtilleryUnits),
-            GetAverageUnits(DefenderRemainingUnits, u => u.TankUnits),
-            GetAverageUnits(DefenderRemainingUnits, u => u.FighterUnits),
-            GetAverageUnits(DefenderRemainingUnits, u => u.BomberUnits)
+            infantryUnits: GetAverageUnits(DefenderRemainingUnits, u => u.InfantryUnits),
+            artilleryUnits: GetAverageUnits(DefenderRemainingUnits, u => u.ArtilleryUnits),
+            tankUnits: GetAverageUnits(DefenderRemainingUnits, u => u.TankUnits),
+            fighterUnits: GetAverageUnits(DefenderRemainingUnits, u => u.FighterUnits),
+            bomberUnits: GetAverageUnits(DefenderRemainingUnits, u => u.BomberUnits)
         );
 
     private double GetAverageUnits(
