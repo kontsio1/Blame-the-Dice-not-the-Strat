@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="axis_class_library.Tests\axis_class_library.Tests.csproj" />
   <Project Path="axis_class_library\axis_class_library.csproj" />
+  <Project Path="axis_mobile_app/axis_mobile_app.csproj" />
 </Solution>
