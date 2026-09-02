@@ -1,6 +1,7 @@
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using axis_console_project.Armies;
 using axis_console_project.Simulations;
 using axis_console_project.UnitTypes.Land;
 
@@ -8,17 +9,17 @@ namespace axis_mobile_app.PageModels;
 
 public partial class MainPageModel : ObservableObject
 {
-    [ObservableProperty] private int _attackerInfantry = 3;
-    [ObservableProperty] private int _attackerArtillery = 1;
-    [ObservableProperty] private int _attackerTank = 1;
+    [ObservableProperty] private int _attackerInfantry;
+    [ObservableProperty] private int _attackerArtillery;
+    [ObservableProperty] private int _attackerTank;
     [ObservableProperty] private int _attackerFighter;
     [ObservableProperty] private int _attackerBomber;
     [ObservableProperty] private int _attackerAntiAir;
     [ObservableProperty] private int _attackerCruiser;
     [ObservableProperty] private int _attackerBattleship;
 
-    [ObservableProperty] private int _defenderInfantry = 4;
-    [ObservableProperty] private int _defenderArtillery = 1;
+    [ObservableProperty] private int _defenderInfantry;
+    [ObservableProperty] private int _defenderArtillery;
     [ObservableProperty] private int _defenderTank;
     [ObservableProperty] private int _defenderFighter;
     [ObservableProperty] private int _defenderBomber;
@@ -30,6 +31,12 @@ public partial class MainPageModel : ObservableObject
     [ObservableProperty] private bool _isBusy;
     [ObservableProperty] private string _statusMessage = "Configure armies and run a simulation.";
     [ObservableProperty] private string _resultsText = string.Empty;
+    [ObservableProperty] private List<OutcomeRow> _battleOutcomeRows = [];
+    [ObservableProperty] private List<ComparisonRow> _armyCompositionRows = [];
+    [ObservableProperty] private List<ComparisonRow> _remainingUnitsRows = [];
+    [ObservableProperty] private List<MetricRow> _summaryMetricRows = [];
+
+    public bool HasResults => BattleOutcomeRows.Count > 0;
 
     public int AttackerCost => CreateArmy(isAttacking: true).Cost;
     public int DefenderCost => CreateArmy(isAttacking: false).Cost;
@@ -81,20 +88,41 @@ public partial class MainPageModel : ObservableObject
                 return simulation.Stats;
             });
 
+            PopulateResultsTables(stats);
             ResultsText = BuildResultsText(stats);
             StatusMessage = "Simulation complete.";
             OnPropertyChanged(nameof(AttackerCost));
             OnPropertyChanged(nameof(DefenderCost));
+            OnPropertyChanged(nameof(HasResults));
+
+            await Shell.Current.GoToAsync("//results");
         }
         catch (Exception ex)
         {
             StatusMessage = "Simulation failed.";
             ResultsText = ex.Message;
+            BattleOutcomeRows = [];
+            ArmyCompositionRows = [];
+            RemainingUnitsRows = [];
+            SummaryMetricRows = [];
+            OnPropertyChanged(nameof(HasResults));
         }
         finally
         {
             IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private async Task ViewResults()
+    {
+        if (!HasResults)
+        {
+            StatusMessage = "Run a simulation first.";
+            return;
+        }
+
+        await Shell.Current.GoToAsync("//results");
     }
 
     private void AdjustUnit(string key, int delta)
@@ -187,10 +215,54 @@ public partial class MainPageModel : ObservableObject
         );
     }
 
+    private void PopulateResultsTables(SimulationStats stats)
+    {
+        var attackingUnits = stats.AttackingArmy?.Units ?? new Units(false);
+        var defendingUnits = stats.DefendingArmy?.Units ?? new Units(false);
+
+        BattleOutcomeRows =
+        [
+            new OutcomeRow("Attacker Wins", stats.AttackerWon, $"{stats.AttackerWonPercentage:F2}%"),
+            new OutcomeRow("Defender Wins", stats.DefenderWon, $"{stats.DefenderWonPercentage:F2}%"),
+            new OutcomeRow("Draws", stats.Draw, $"{stats.DrawPercentage:F2}%")
+        ];
+
+        ArmyCompositionRows =
+        [
+            new ComparisonRow("Infantry", attackingUnits.InfantryUnits.Count.ToString(), defendingUnits.InfantryUnits.Count.ToString()),
+            new ComparisonRow("Artillery", attackingUnits.ArtilleryUnits.Count.ToString(), defendingUnits.ArtilleryUnits.Count.ToString()),
+            new ComparisonRow("Tank", attackingUnits.TankUnits.Count.ToString(), defendingUnits.TankUnits.Count.ToString()),
+            new ComparisonRow("Fighter", attackingUnits.FighterUnits.Count.ToString(), defendingUnits.FighterUnits.Count.ToString()),
+            new ComparisonRow("Bomber", attackingUnits.BomberUnits.Count.ToString(), defendingUnits.BomberUnits.Count.ToString()),
+            new ComparisonRow("Anti-Air", attackingUnits.AntiAirUnits.Count.ToString(), defendingUnits.AntiAirUnits.Count.ToString()),
+            new ComparisonRow("Cruiser", attackingUnits.CruiserUnits.Count.ToString(), defendingUnits.CruiserUnits.Count.ToString()),
+            new ComparisonRow("Battleship", attackingUnits.BattleshipUnits.Count.ToString(), defendingUnits.BattleshipUnits.Count.ToString())
+        ];
+
+        RemainingUnitsRows =
+        [
+            new ComparisonRow("Infantry", $"{stats.AttackerRemainingUnitsAvg.InfantryUnits:F2}", $"{stats.DefenderRemainingUnitsAvg.InfantryUnits:F2}"),
+            new ComparisonRow("Artillery", $"{stats.AttackerRemainingUnitsAvg.ArtilleryUnits:F2}", $"{stats.DefenderRemainingUnitsAvg.ArtilleryUnits:F2}"),
+            new ComparisonRow("Tank", $"{stats.AttackerRemainingUnitsAvg.TankUnits:F2}", $"{stats.DefenderRemainingUnitsAvg.TankUnits:F2}"),
+            new ComparisonRow("Fighter", $"{stats.AttackerRemainingUnitsAvg.FighterUnits:F2}", $"{stats.DefenderRemainingUnitsAvg.FighterUnits:F2}"),
+            new ComparisonRow("Bomber", $"{stats.AttackerRemainingUnitsAvg.BomberUnits:F2}", $"{stats.DefenderRemainingUnitsAvg.BomberUnits:F2}"),
+            new ComparisonRow("Anti-Air", $"{stats.AttackerRemainingUnitsAvg.AntiAirUnits:F2}", $"{stats.DefenderRemainingUnitsAvg.AntiAirUnits:F2}"),
+            new ComparisonRow("Cruiser", $"{stats.AttackerRemainingUnitsAvg.CruiserUnits:F2}", $"{stats.DefenderRemainingUnitsAvg.CruiserUnits:F2}"),
+            new ComparisonRow("Battleship", $"{stats.AttackerRemainingUnitsAvg.BattleshipUnits:F2}", $"{stats.DefenderRemainingUnitsAvg.BattleshipUnits:F2}")
+        ];
+
+        SummaryMetricRows =
+        [
+            new MetricRow("Total Battles", stats.TotalBattles.ToString()),
+            new MetricRow("Average Attacker CP Loss", $"{stats.AttackerAvgCpLoss:F2}"),
+            new MetricRow("Average Defender CP Loss", $"{stats.DefenderAvgCpLoss:F2}"),
+            new MetricRow("Cost Comparison", $"{stats.AttackingArmy?.Cost ?? 0} CP vs {stats.DefendingArmy?.Cost ?? 0} CP")
+        ];
+    }
+
     private static string BuildResultsText(SimulationStats stats)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("--- Simulation Summary ---");
         sb.AppendLine();
         sb.AppendLine("Battle Results:");
         sb.AppendLine($"Attacker Wins: {stats.AttackerWon}, {stats.AttackerWonPercentage:F2}%");
@@ -213,3 +285,10 @@ public partial class MainPageModel : ObservableObject
         return sb.ToString();
     }
 }
+
+public record OutcomeRow(string Result, int Count, string Percentage);
+
+public record ComparisonRow(string Unit, string Attacker, string Defender);
+
+public record MetricRow(string Metric, string Value);
+

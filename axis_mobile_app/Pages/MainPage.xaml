@@ -13,8 +13,10 @@
 
             <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="Attacking Army" FontAttributes="Bold" FontSize="18" />
-                    <Label Text="Cost: {Binding AttackerCost} CP" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="Attacking Army" FontAttributes="Bold" FontSize="18" />
+                        <Label Grid.Column="1" Text="{Binding AttackerCost, StringFormat='Cost: {0} CP'}" VerticalTextAlignment="Center" />
+                    </Grid>
 
                     <Grid ColumnDefinitions="*,Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
                         <Label Grid.Row="0" Grid.Column="0" Text="Infantry" />
@@ -62,8 +64,10 @@
 
             <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="Defending Army" FontAttributes="Bold" FontSize="18" />
-                    <Label Text="Cost: {Binding DefenderCost} CP" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="Defending Army" FontAttributes="Bold" FontSize="18" />
+                        <Label Grid.Column="1" Text="{Binding DefenderCost, StringFormat='Cost: {0} CP'}" VerticalTextAlignment="Center" />
+                    </Grid>
 
                     <Grid ColumnDefinitions="*,Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
                         <Label Grid.Row="0" Grid.Column="0" Text="Infantry" />
@@ -95,16 +99,6 @@
                         <Button Grid.Row="5" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="defender_antiair" />
                         <Label Grid.Row="5" Grid.Column="2" Text="{Binding DefenderAntiAir}" HorizontalTextAlignment="Center" WidthRequest="40" />
                         <Button Grid.Row="5" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="defender_antiair" />
-
-                        <Label Grid.Row="6" Grid.Column="0" Text="Cruiser" />
-                        <Button Grid.Row="6" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="defender_cruiser" />
-                        <Label Grid.Row="6" Grid.Column="2" Text="{Binding DefenderCruiser}" HorizontalTextAlignment="Center" WidthRequest="40" />
-                        <Button Grid.Row="6" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="defender_cruiser" />
-
-                        <Label Grid.Row="7" Grid.Column="0" Text="Battleship" />
-                        <Button Grid.Row="7" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="defender_battleship" />
-                        <Label Grid.Row="7" Grid.Column="2" Text="{Binding DefenderBattleship}" HorizontalTextAlignment="Center" WidthRequest="40" />
-                        <Button Grid.Row="7" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="defender_battleship" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
@@ -112,21 +106,18 @@
             <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Simulation Count" FontAttributes="Bold" FontSize="18" />
-                    <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
                         <Button Grid.Column="0" Text="-" Command="{Binding DecrementSimulationCountCommand}" />
-                        <Label Grid.Column="1" Text="{Binding SimulationCount}" VerticalTextAlignment="Center" WidthRequest="80" HorizontalTextAlignment="Center" />
+                        <Entry Grid.Column="1"
+                               Text="{Binding SimulationCount, Mode=TwoWay}"
+                               Keyboard="Numeric"
+                               HorizontalTextAlignment="Center" />
                         <Button Grid.Column="2" Text="+" Command="{Binding IncrementSimulationCountCommand}" />
                         <Button Grid.Column="3" Text="Run" Command="{Binding RunSimulationCommand}" />
                     </Grid>
                     <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
                     <Label Text="{Binding StatusMessage}" />
-                </VerticalStackLayout>
-            </Border>
-
-            <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Results" FontAttributes="Bold" FontSize="18" />
-                    <Label Text="{Binding ResultsText}" LineBreakMode="WordWrap" />
+                    <Button Text="View Results" Command="{Binding ViewResultsCommand}" />
                 </VerticalStackLayout>
             </Border>
         </VerticalStackLayout>

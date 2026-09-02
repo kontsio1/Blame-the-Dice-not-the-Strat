@@ -6,9 +6,16 @@
     xmlns:pages="clr-namespace:axis_mobile_app.Pages"
     Title="Axis &amp; Allies Simulator">
 
-    <ShellContent
-        Title="Land Battle"
-        ContentTemplate="{DataTemplate pages:MainPage}"
-        Route="main" />
+    <TabBar>
+        <ShellContent
+            Title="Setup"
+            ContentTemplate="{DataTemplate pages:MainPage}"
+            Route="main" />
+
+        <ShellContent
+            Title="Results"
+            ContentTemplate="{DataTemplate pages:ResultsPage}"
+            Route="results" />
+    </TabBar>
 
 </Shell>
