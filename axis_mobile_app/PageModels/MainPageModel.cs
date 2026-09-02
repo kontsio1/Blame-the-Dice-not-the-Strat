@@ -95,11 +95,11 @@ public partial class MainPageModel : ObservableObject
             OnPropertyChanged(nameof(DefenderCost));
             OnPropertyChanged(nameof(HasResults));
 
-            await Shell.Current.GoToAsync("//results");
+            await Shell.Current.GoToAsync("//land/land-results-tab");
         }
         catch (Exception ex)
         {
-            StatusMessage = "Simulation failed.";
+            StatusMessage = $"Simulation failed: {ex.Message}";
             ResultsText = ex.Message;
             BattleOutcomeRows = [];
             ArmyCompositionRows = [];
@@ -122,7 +122,7 @@ public partial class MainPageModel : ObservableObject
             return;
         }
 
-        await Shell.Current.GoToAsync("//results");
+        await Shell.Current.GoToAsync("//land/land-results-tab");
     }
 
     private void AdjustUnit(string key, int delta)
@@ -285,10 +285,4 @@ public partial class MainPageModel : ObservableObject
         return sb.ToString();
     }
 }
-
-public record OutcomeRow(string Result, int Count, string Percentage);
-
-public record ComparisonRow(string Unit, string Attacker, string Defender);
-
-public record MetricRow(string Metric, string Value);
 

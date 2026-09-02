@@ -4,18 +4,40 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:pages="clr-namespace:axis_mobile_app.Pages"
+    FlyoutBehavior="Flyout"
     Title="Axis &amp; Allies Simulator">
 
-    <TabBar>
-        <ShellContent
-            Title="Setup"
-            ContentTemplate="{DataTemplate pages:MainPage}"
-            Route="main" />
+    <FlyoutItem Title="Land Battle Simulator" Route="land">
+        <Tab Title="Setup" Route="land-setup-tab">
+            <ShellContent
+                ContentTemplate="{DataTemplate pages:MainPage}"
+                Route="land-setup" />
+        </Tab>
+        <Tab Title="Results" Route="land-results-tab">
+            <ShellContent
+                ContentTemplate="{DataTemplate pages:ResultsPage}"
+                Route="land-results" />
+        </Tab>
+    </FlyoutItem>
 
+    <FlyoutItem Title="Naval Battle Simulator" Route="naval">
+        <Tab Title="Setup" Route="naval-setup-tab">
+            <ShellContent
+                ContentTemplate="{DataTemplate pages:NavalMainPage}"
+                Route="naval-setup" />
+        </Tab>
+        <Tab Title="Results" Route="naval-results-tab">
+            <ShellContent
+                ContentTemplate="{DataTemplate pages:NavalResultsPage}"
+                Route="naval-results" />
+        </Tab>
+    </FlyoutItem>
+
+    <FlyoutItem Title="About" Route="about">
         <ShellContent
-            Title="Results"
-            ContentTemplate="{DataTemplate pages:ResultsPage}"
-            Route="results" />
-    </TabBar>
+            Title="About"
+            ContentTemplate="{DataTemplate pages:AboutPage}"
+            Route="about-page" />
+    </FlyoutItem>
 
 </Shell>

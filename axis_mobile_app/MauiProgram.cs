@@ -20,8 +20,12 @@ public static class MauiProgram
 #endif
 
         builder.Services.AddSingleton<MainPageModel>();
+        builder.Services.AddSingleton<NavalPageModel>();
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddSingleton<ResultsPage>();
+        builder.Services.AddSingleton<NavalMainPage>();
+        builder.Services.AddSingleton<NavalResultsPage>();
+        builder.Services.AddSingleton<AboutPage>();
 
         return builder.Build();
     }
