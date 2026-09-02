@@ -1,168 +1,215 @@
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using axis_mobile_app.Models;
+using axis_console_project.Simulations;
+using axis_console_project.UnitTypes.Land;
 
 namespace axis_mobile_app.PageModels;
 
-public partial class MainPageModel : ObservableObject, IProjectTaskPageModel
+public partial class MainPageModel : ObservableObject
 {
-    private bool _isNavigatedTo;
-    private bool _dataLoaded;
-    private readonly ProjectRepository _projectRepository;
-    private readonly TaskRepository _taskRepository;
-    private readonly CategoryRepository _categoryRepository;
-    private readonly ModalErrorHandler _errorHandler;
-    private readonly SeedDataService _seedDataService;
+    [ObservableProperty] private int _attackerInfantry = 3;
+    [ObservableProperty] private int _attackerArtillery = 1;
+    [ObservableProperty] private int _attackerTank = 1;
+    [ObservableProperty] private int _attackerFighter;
+    [ObservableProperty] private int _attackerBomber;
+    [ObservableProperty] private int _attackerAntiAir;
+    [ObservableProperty] private int _attackerCruiser;
+    [ObservableProperty] private int _attackerBattleship;
 
-    [ObservableProperty] private List<CategoryChartData> _todoCategoryData = [];
+    [ObservableProperty] private int _defenderInfantry = 4;
+    [ObservableProperty] private int _defenderArtillery = 1;
+    [ObservableProperty] private int _defenderTank;
+    [ObservableProperty] private int _defenderFighter;
+    [ObservableProperty] private int _defenderBomber;
+    [ObservableProperty] private int _defenderAntiAir;
+    [ObservableProperty] private int _defenderCruiser;
+    [ObservableProperty] private int _defenderBattleship;
 
-    [ObservableProperty] private List<Brush> _todoCategoryColors = [];
+    [ObservableProperty] private int _simulationCount = 10000;
+    [ObservableProperty] private bool _isBusy;
+    [ObservableProperty] private string _statusMessage = "Configure armies and run a simulation.";
+    [ObservableProperty] private string _resultsText = string.Empty;
 
-    [ObservableProperty] private List<ProjectTask> _tasks = [];
+    public int AttackerCost => CreateArmy(isAttacking: true).Cost;
+    public int DefenderCost => CreateArmy(isAttacking: false).Cost;
 
-    [ObservableProperty] private List<Project> _projects = [];
+    [RelayCommand]
+    private void IncrementUnit(string key) => AdjustUnit(key, 1);
 
-    [ObservableProperty] bool _isBusy;
+    [RelayCommand]
+    private void DecrementUnit(string key) => AdjustUnit(key, -1);
 
-    [ObservableProperty] bool _isRefreshing;
-
-    [ObservableProperty] private string _today = DateTime.Now.ToString("dddd, MMM d");
-
-    [ObservableProperty] private Project? selectedProject;
-
-    public bool HasCompletedTasks
-        => Tasks?.Any(t => t.IsCompleted) ?? false;
-
-    public MainPageModel(SeedDataService seedDataService, ProjectRepository projectRepository,
-        TaskRepository taskRepository, CategoryRepository categoryRepository, ModalErrorHandler errorHandler)
+    [RelayCommand]
+    private void IncrementSimulationCount()
     {
-        _projectRepository = projectRepository;
-        _taskRepository = taskRepository;
-        _categoryRepository = categoryRepository;
-        _errorHandler = errorHandler;
-        _seedDataService = seedDataService;
+        SimulationCount += 1000;
     }
 
-    private async Task LoadData()
+    [RelayCommand]
+    private void DecrementSimulationCount()
     {
+        SimulationCount = Math.Max(100, SimulationCount - 1000);
+    }
+
+    [RelayCommand]
+    private async Task RunSimulation()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        if (SimulationCount <= 0)
+        {
+            StatusMessage = "Simulation count must be greater than zero.";
+            return;
+        }
+
+        IsBusy = true;
+        StatusMessage = "Running simulation...";
+
         try
         {
-            IsBusy = true;
+            var attackingArmy = CreateArmy(isAttacking: true);
+            var defendingArmy = CreateArmy(isAttacking: false);
 
-            Projects = await _projectRepository.ListAsync();
-
-            var chartData = new List<CategoryChartData>();
-            var chartColors = new List<Brush>();
-
-            var categories = await _categoryRepository.ListAsync();
-            foreach (var category in categories)
+            var stats = await Task.Run(() =>
             {
-                chartColors.Add(category.ColorBrush);
+                var simulation = new Simulation(attackingArmy, defendingArmy);
+                simulation.Run(SimulationCount);
+                return simulation.Stats;
+            });
 
-                var ps = Projects.Where(p => p.CategoryID == category.ID).ToList();
-                int tasksCount = ps.SelectMany(p => p.Tasks).Count();
-
-                chartData.Add(new(category.Title, tasksCount));
-            }
-
-            TodoCategoryData = chartData;
-            TodoCategoryColors = chartColors;
-
-            Tasks = await _taskRepository.ListAsync();
+            ResultsText = BuildResultsText(stats);
+            StatusMessage = "Simulation complete.";
+            OnPropertyChanged(nameof(AttackerCost));
+            OnPropertyChanged(nameof(DefenderCost));
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = "Simulation failed.";
+            ResultsText = ex.Message;
         }
         finally
         {
             IsBusy = false;
-            OnPropertyChanged(nameof(HasCompletedTasks));
         }
     }
 
-    private async Task InitData(SeedDataService seedDataService)
+    private void AdjustUnit(string key, int delta)
     {
-        bool isSeeded = Preferences.Default.ContainsKey("is_seeded");
-
-        if (!isSeeded)
+        switch (key)
         {
-            await seedDataService.LoadSeedDataAsync();
+            case "attacker_infantry":
+                AttackerInfantry = Clamp(AttackerInfantry + delta);
+                break;
+            case "attacker_artillery":
+                AttackerArtillery = Clamp(AttackerArtillery + delta);
+                break;
+            case "attacker_tank":
+                AttackerTank = Clamp(AttackerTank + delta);
+                break;
+            case "attacker_fighter":
+                AttackerFighter = Clamp(AttackerFighter + delta);
+                break;
+            case "attacker_bomber":
+                AttackerBomber = Clamp(AttackerBomber + delta);
+                break;
+            case "attacker_antiair":
+                AttackerAntiAir = Clamp(AttackerAntiAir + delta);
+                break;
+            case "attacker_cruiser":
+                AttackerCruiser = Clamp(AttackerCruiser + delta);
+                break;
+            case "attacker_battleship":
+                AttackerBattleship = Clamp(AttackerBattleship + delta);
+                break;
+            case "defender_infantry":
+                DefenderInfantry = Clamp(DefenderInfantry + delta);
+                break;
+            case "defender_artillery":
+                DefenderArtillery = Clamp(DefenderArtillery + delta);
+                break;
+            case "defender_tank":
+                DefenderTank = Clamp(DefenderTank + delta);
+                break;
+            case "defender_fighter":
+                DefenderFighter = Clamp(DefenderFighter + delta);
+                break;
+            case "defender_bomber":
+                DefenderBomber = Clamp(DefenderBomber + delta);
+                break;
+            case "defender_antiair":
+                DefenderAntiAir = Clamp(DefenderAntiAir + delta);
+                break;
+            case "defender_cruiser":
+                DefenderCruiser = Clamp(DefenderCruiser + delta);
+                break;
+            case "defender_battleship":
+                DefenderBattleship = Clamp(DefenderBattleship + delta);
+                break;
         }
 
-        Preferences.Default.Set("is_seeded", true);
-        await Refresh();
+        OnPropertyChanged(nameof(AttackerCost));
+        OnPropertyChanged(nameof(DefenderCost));
     }
 
-    [RelayCommand]
-    private async Task Refresh()
+    private static int Clamp(int value) => Math.Max(0, value);
+
+    private LandArmy CreateArmy(bool isAttacking)
     {
-        try
+        if (isAttacking)
         {
-            IsRefreshing = true;
-            await LoadData();
+            return new LandArmy(
+                isAttacking: true,
+                infantryCount: AttackerInfantry,
+                artilleryCount: AttackerArtillery,
+                tankCount: AttackerTank,
+                fighterCount: AttackerFighter,
+                bomberCount: AttackerBomber,
+                antiAirCount: AttackerAntiAir,
+                cruiserCount: AttackerCruiser,
+                battleshipCount: AttackerBattleship
+            );
         }
-        catch (Exception e)
-        {
-            _errorHandler.HandleError(e);
-        }
-        finally
-        {
-            IsRefreshing = false;
-        }
+
+        return new LandArmy(
+            isAttacking: false,
+            infantryCount: DefenderInfantry,
+            artilleryCount: DefenderArtillery,
+            tankCount: DefenderTank,
+            fighterCount: DefenderFighter,
+            bomberCount: DefenderBomber,
+            antiAirCount: DefenderAntiAir,
+            cruiserCount: DefenderCruiser,
+            battleshipCount: DefenderBattleship
+        );
     }
 
-    [RelayCommand]
-    private void NavigatedTo() =>
-        _isNavigatedTo = true;
-
-    [RelayCommand]
-    private void NavigatedFrom() =>
-        _isNavigatedTo = false;
-
-    [RelayCommand]
-    private async Task Appearing()
+    private static string BuildResultsText(SimulationStats stats)
     {
-        if (!_dataLoaded)
-        {
-            await InitData(_seedDataService);
-            _dataLoaded = true;
-            await Refresh();
-        }
-        // This means we are being navigated to
-        else if (!_isNavigatedTo)
-        {
-            await Refresh();
-        }
-    }
+        var sb = new StringBuilder();
+        sb.AppendLine("--- Simulation Summary ---");
+        sb.AppendLine();
+        sb.AppendLine("Battle Results:");
+        sb.AppendLine($"Attacker Wins: {stats.AttackerWon}, {stats.AttackerWonPercentage:F2}%");
+        sb.AppendLine($"Defender Wins: {stats.DefenderWon}, {stats.DefenderWonPercentage:F2}%");
+        sb.AppendLine($"Draws: {stats.Draw}, {stats.DrawPercentage:F2}%");
+        sb.AppendLine();
+        sb.AppendLine("Attacker Army:");
+        sb.AppendLine($"{stats.AttackingArmy?.Units}");
+        sb.AppendLine("Defending Army:");
+        sb.AppendLine($"{stats.DefendingArmy?.Units}");
+        sb.AppendLine();
+        sb.AppendLine("Average Attacker Remaining Units:");
+        sb.AppendLine($"{stats.AttackerRemainingUnitsAvg}");
+        sb.AppendLine("Average Defender Remaining Units:");
+        sb.AppendLine($"{stats.DefenderRemainingUnitsAvg}");
+        sb.AppendLine($"Average Attacker CP Loss: {stats.AttackerAvgCpLoss:F2}");
+        sb.AppendLine($"Average Defender CP Loss: {stats.DefenderAvgCpLoss:F2}");
+        sb.AppendLine($"{stats.AttackingArmy?.Cost ?? 0} CP vs {stats.DefendingArmy?.Cost ?? 0} CP");
 
-    [RelayCommand]
-    private Task TaskCompleted(ProjectTask task)
-    {
-        OnPropertyChanged(nameof(HasCompletedTasks));
-        return _taskRepository.SaveItemAsync(task);
-    }
-
-    [RelayCommand]
-    private Task AddTask()
-        => Shell.Current.GoToAsync($"task");
-
-    [RelayCommand]
-    private Task? NavigateToProject(Project project)
-        => project is null ? null : Shell.Current.GoToAsync($"project?id={project.ID}");
-
-    [RelayCommand]
-    private Task NavigateToTask(ProjectTask task)
-        => Shell.Current.GoToAsync($"task?id={task.ID}");
-
-    [RelayCommand]
-    private async Task CleanTasks()
-    {
-        var completedTasks = Tasks.Where(t => t.IsCompleted).ToList();
-        foreach (var task in completedTasks)
-        {
-            await _taskRepository.DeleteItemAsync(task);
-            Tasks.Remove(task);
-        }
-
-        OnPropertyChanged(nameof(HasCompletedTasks));
-        Tasks = new(Tasks);
-        await AppShell.DisplayToastAsync("All cleaned up!");
+        return sb.ToString();
     }
 }

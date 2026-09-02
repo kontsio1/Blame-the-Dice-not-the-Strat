@@ -1,5 +1,4 @@
-﻿using axis_mobile_app.Models;
-using axis_mobile_app.PageModels;
+﻿using axis_mobile_app.PageModels;
 
 namespace axis_mobile_app.Pages;
 
