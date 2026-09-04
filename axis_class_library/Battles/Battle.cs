@@ -16,21 +16,22 @@ public class Battle
         this.AttackingArmy = attackingArmy;
         this.DefendingArmy = defendingArmy;
     }
-    private int roundNo;
-    public BattleResult Fight()
+    public BattleResult Fight(CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (AttackingArmy is LandArmy)
         {
-            AntiAirDefense();
-            NavalBombardment();
+            AntiAirDefense(cancellationToken);
+            NavalBombardment(cancellationToken);
         }
         if (DefendingArmy is NavalArmada { PreventsSubSupriseAttack: false })
         {
-            SubSurpriseAttack();
+            SubSurpriseAttack(cancellationToken);
         }
         while (Outcome is null)
         {
-            ++roundNo;
+            cancellationToken.ThrowIfCancellationRequested();
             var casualtiesD = AttackingArmy.Fire();
             var casualtiesA = DefendingArmy.Fire();
 
@@ -66,14 +67,18 @@ public class Battle
         }
     }
 
-    private void NavalBombardment()
+    private void NavalBombardment(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (AttackingArmy.GetType() == typeof(LandArmy))
         {
             var attackingNavalUnits = AttackingArmy.GetAllBombardingNavalUnits();
             var bombardmentCasualties = 0;
             foreach (var navalUnit in attackingNavalUnits)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 if (navalUnit.CanBombardLandUnits)
                 {
                     var hit = navalUnit.Fire();
@@ -87,8 +92,10 @@ public class Battle
         }
     }
 
-    private void AntiAirDefense()
+    private void AntiAirDefense(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var antiAir = DefendingArmy.GetAllUnits().FirstOrDefault(e => e is AntiAir) as AntiAir;
         if (antiAir != null)
         {
@@ -96,6 +103,8 @@ public class Battle
 
             foreach (var u in air)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var hit = antiAir.DefendAgainstAirAttack();
                 if (hit)
                 {
@@ -105,13 +114,17 @@ public class Battle
         }
     }
 
-    private void SubSurpriseAttack()
+    private void SubSurpriseAttack(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var subs = AttackingArmy.Units.SubmarineUnits.ToList();
         var casualties = 0;
 
         foreach (var sub in subs)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var hit = sub.Fire();
             if (hit)
             {

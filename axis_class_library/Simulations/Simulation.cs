@@ -21,7 +21,9 @@ public class Simulation
         }
         else throw new Exception("One army must be attacking and the other defending");
     }
-    public int Progress = 0;
+    public int Progress;
+
+    public double ProgressPercentage => Progress;
 
     public override string ToString()
     {
@@ -29,26 +31,34 @@ public class Simulation
             $"\nSimulation for armies:\n{AttackingArmy.Units} \nvs\n {DefendingArmy.Units}\n";
     }
 
-    public List<BattleResult> Run(int numberOfSimulations = 1000)
+    public List<BattleResult> Run(int numberOfSimulations = 1000, Action<double>? progressCallback = null, CancellationToken cancellationToken = default)
     {
         var battleResults = new List<BattleResult>();
         for (int i = 0; i < numberOfSimulations; i++)
         {
-            var battleResult = RunOnce();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var battleResult = RunOnce(cancellationToken);
             battleResults.Add(battleResult);
-            Progress = i / numberOfSimulations;
+            Progress = (int)Math.Round((i + 1) * 100.0 / numberOfSimulations);
+            progressCallback?.Invoke(Progress);
         }
+
+        Progress = 100;
+        progressCallback?.Invoke(Progress);
         return battleResults;
     }
 
-    public BattleResult RunOnce()
+    public BattleResult RunOnce(CancellationToken cancellationToken = default)
     {
         // Console.Write($"\r--- {(double)i / NumberOfSimulations * 100:F2}% Complete ---");
+        cancellationToken.ThrowIfCancellationRequested();
+
         var battle = new Battle(AttackingArmy.Clone(), DefendingArmy.Clone());
-        var battleResult = battle.Fight();
+        var battleResult = battle.Fight(cancellationToken);
         Stats.RecordResult(battleResult);
         
-        Progress = 1;
+        Progress = 100;
         return battleResult;
     }
 

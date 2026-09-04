@@ -1,10 +1,9 @@
-﻿using axis_console_project.Simulations;
+﻿using axis_console_project.Resolvers;
+using axis_console_project.Simulations;
 using axis_console_project.UnitTypes.Land;
 
-var attackingArmy = new LandArmy(true,6,0,6,6,1);
-var defendingArmy = new LandArmy(false, 7,1,3,2, antiAirCount:1);
+var army = new LandArmy(true,5,5,1,0,0);
 
-var simulation = new Simulation(attackingArmy, defendingArmy);
-simulation.Run(1000000);
-
-simulation.Stats.Explain();
+var builder = new LandArmyBuilder();
+var solution = builder.CreateCounterArmy(army, sims: 2000, cost: 35);
+Console.WriteLine(solution);

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pageModels="clr-namespace:axis_mobile_app.PageModels"
+             x:Class="axis_mobile_app.Pages.CounterResultsPage"
+             x:DataType="pageModels:CounterPageModel"
+             Title="Counter Results">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+            <Label Text="Find Counter Results"
+                   FontSize="24"
+                   FontAttributes="Bold" />
+            <Label Text="{Binding ResultsSummaryText}"
+                   FontSize="14"
+                   Opacity="0.8" />
+
+            <FlexLayout Direction="Row"
+                        Wrap="Wrap"
+                        JustifyContent="SpaceBetween"
+                        AlignItems="Start">
+                <Border Padding="12"
+                        Stroke="LightGray"
+                        StrokeThickness="1"
+                        Margin="0,0,0,12"
+                        MinimumWidthRequest="300"
+                        FlexLayout.Basis="48%"
+                        FlexLayout.Grow="1">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{Binding TargetArmySummaryText}"
+                               FontAttributes="Bold"
+                               FontSize="18" />
+                        <Label Text="{Binding TargetArmyCostText}"
+                               FontAttributes="Bold" />
+                        <Label Text="{Binding TargetArmyCompositionText}"
+                               LineBreakMode="WordWrap" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Padding="12"
+                        Stroke="LightGray"
+                        StrokeThickness="1"
+                        Margin="0,0,0,12"
+                        MinimumWidthRequest="300"
+                        FlexLayout.Basis="48%"
+                        FlexLayout.Grow="1">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{Binding BestCounterArmySummaryText}"
+                               FontAttributes="Bold"
+                               FontSize="18" />
+                        <Label Text="{Binding BestCounterArmyCostText}"
+                               FontAttributes="Bold" />
+                        <Label Text="{Binding BestCounterArmyCompositionText}"
+                               LineBreakMode="WordWrap" />
+                    </VerticalStackLayout>
+                </Border>
+            </FlexLayout>
+
+            <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Battle Outcomes" FontAttributes="Bold" FontSize="18" />
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="Result" FontAttributes="Bold" />
+                        <Label Grid.Column="1" Text="Count" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                        <Label Grid.Column="2" Text="Percentage" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                    </Grid>
+                    <CollectionView ItemsSource="{Binding BattleOutcomeRows}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="pageModels:OutcomeRow">
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Padding="0,2">
+                                    <Label Grid.Column="0" Text="{Binding Result}" />
+                                    <Label Grid.Column="1" Text="{Binding Count}" HorizontalTextAlignment="End" />
+                                    <Label Grid.Column="2" Text="{Binding Percentage}" HorizontalTextAlignment="End" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Target vs Best Counter" FontAttributes="Bold" FontSize="18" />
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="Unit" FontAttributes="Bold" />
+                        <Label Grid.Column="1" Text="Target" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                        <Label Grid.Column="2" Text="Counter" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                    </Grid>
+                    <CollectionView ItemsSource="{Binding ArmyCompositionRows}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="pageModels:ComparisonRow">
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Padding="0,2">
+                                    <Label Grid.Column="0" Text="{Binding Unit}" />
+                                    <Label Grid.Column="1" Text="{Binding Attacker}" HorizontalTextAlignment="End" />
+                                    <Label Grid.Column="2" Text="{Binding Defender}" HorizontalTextAlignment="End" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Average Remaining Units" FontAttributes="Bold" FontSize="18" />
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="Unit" FontAttributes="Bold" />
+                        <Label Grid.Column="1" Text="Attacker" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                        <Label Grid.Column="2" Text="Defender" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                    </Grid>
+                    <CollectionView ItemsSource="{Binding RemainingUnitsRows}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="pageModels:ComparisonRow">
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Padding="0,2">
+                                    <Label Grid.Column="0" Text="{Binding Unit}" />
+                                    <Label Grid.Column="1" Text="{Binding Attacker}" HorizontalTextAlignment="End" />
+                                    <Label Grid.Column="2" Text="{Binding Defender}" HorizontalTextAlignment="End" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Summary Metrics" FontAttributes="Bold" FontSize="18" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="Metric" FontAttributes="Bold" />
+                        <Label Grid.Column="1" Text="Value" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                    </Grid>
+                    <CollectionView ItemsSource="{Binding SummaryMetricRows}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="pageModels:MetricRow">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,2">
+                                    <Label Grid.Column="0" Text="{Binding Metric}" />
+                                    <Label Grid.Column="1" Text="{Binding Value}" HorizontalTextAlignment="End" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pageModels="clr-namespace:axis_mobile_app.PageModels"
+             x:Class="axis_mobile_app.Pages.CounterMainPage"
+             x:DataType="pageModels:CounterPageModel"
+             Title="Find Counter">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+            <Label Text="Find Counter"
+                   FontSize="24"
+                   FontAttributes="Bold" />
+            <Label Text="Choose the target army type and role, build the composition, then search for the best counter." 
+                   FontSize="14"
+                   Opacity="0.8" />
+
+            <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <Label Grid.Column="0"
+                               Text="Target Army"
+                               FontAttributes="Bold"
+                               FontSize="18" />
+                        <Label Grid.Column="1"
+                               Text="{Binding TargetCost, StringFormat='Cost: {0} CP'}"
+                               VerticalTextAlignment="Center" />
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="Army Type" FontAttributes="Bold" />
+                            <Picker Title="Select army type"
+                                    ItemsSource="{Binding ArmyTypeOptions}"
+                                    SelectedItem="{Binding SelectedArmyType, Mode=TwoWay}" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Target Role" FontAttributes="Bold" />
+                            <Picker Title="Select role"
+                                    ItemsSource="{Binding TargetRoleOptions}"
+                                    SelectedItem="{Binding SelectedTargetRole, Mode=TwoWay}" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <VerticalStackLayout IsVisible="{Binding IsLandArmy}" Spacing="8">
+                        <Label Text="Land Army Composition" FontAttributes="Bold" FontSize="16" />
+                        <Grid ColumnDefinitions="*,Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                            <Label Grid.Row="0" Grid.Column="0" Text="Infantry" />
+                            <Button Grid.Row="0" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="land_infantry" />
+                            <Label Grid.Row="0" Grid.Column="2" Text="{Binding LandInfantry}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="0" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="land_infantry" />
+
+                            <Label Grid.Row="1" Grid.Column="0" Text="Artillery" />
+                            <Button Grid.Row="1" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="land_artillery" />
+                            <Label Grid.Row="1" Grid.Column="2" Text="{Binding LandArtillery}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="1" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="land_artillery" />
+
+                            <Label Grid.Row="2" Grid.Column="0" Text="Tank" />
+                            <Button Grid.Row="2" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="land_tank" />
+                            <Label Grid.Row="2" Grid.Column="2" Text="{Binding LandTank}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="2" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="land_tank" />
+
+                            <Label Grid.Row="3" Grid.Column="0" Text="Fighter" />
+                            <Button Grid.Row="3" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="land_fighter" />
+                            <Label Grid.Row="3" Grid.Column="2" Text="{Binding LandFighter}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="3" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="land_fighter" />
+
+                            <Label Grid.Row="4" Grid.Column="0" Text="Bomber" />
+                            <Button Grid.Row="4" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="land_bomber" />
+                            <Label Grid.Row="4" Grid.Column="2" Text="{Binding LandBomber}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="4" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="land_bomber" />
+
+                            <Label Grid.Row="5" Grid.Column="0" Text="Anti-Air" />
+                            <Button Grid.Row="5" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="land_antiair" />
+                            <Label Grid.Row="5" Grid.Column="2" Text="{Binding LandAntiAir}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="5" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="land_antiair" />
+
+                            <Label Grid.Row="6" Grid.Column="0" Text="Cruiser" />
+                            <Button Grid.Row="6" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="land_cruiser" />
+                            <Label Grid.Row="6" Grid.Column="2" Text="{Binding LandCruiser}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="6" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="land_cruiser" />
+
+                            <Label Grid.Row="7" Grid.Column="0" Text="Battleship" />
+                            <Button Grid.Row="7" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="land_battleship" />
+                            <Label Grid.Row="7" Grid.Column="2" Text="{Binding LandBattleship}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="7" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="land_battleship" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout IsVisible="{Binding IsNavalArmy}" Spacing="8">
+                        <Label Text="Naval Armada Composition" FontAttributes="Bold" FontSize="16" />
+                        <Grid ColumnDefinitions="*,Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                            <Label Grid.Row="0" Grid.Column="0" Text="Transport" />
+                            <Button Grid.Row="0" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="naval_transport" />
+                            <Label Grid.Row="0" Grid.Column="2" Text="{Binding NavalTransport}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="0" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="naval_transport" />
+
+                            <Label Grid.Row="1" Grid.Column="0" Text="Submarine" />
+                            <Button Grid.Row="1" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="naval_submarine" />
+                            <Label Grid.Row="1" Grid.Column="2" Text="{Binding NavalSubmarine}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="1" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="naval_submarine" />
+
+                            <Label Grid.Row="2" Grid.Column="0" Text="Destroyer" />
+                            <Button Grid.Row="2" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="naval_destroyer" />
+                            <Label Grid.Row="2" Grid.Column="2" Text="{Binding NavalDestroyer}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="2" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="naval_destroyer" />
+
+                            <Label Grid.Row="3" Grid.Column="0" Text="Cruiser" />
+                            <Button Grid.Row="3" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="naval_cruiser" />
+                            <Label Grid.Row="3" Grid.Column="2" Text="{Binding NavalCruiser}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="3" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="naval_cruiser" />
+
+                            <Label Grid.Row="4" Grid.Column="0" Text="Battleship" />
+                            <Button Grid.Row="4" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="naval_battleship" />
+                            <Label Grid.Row="4" Grid.Column="2" Text="{Binding NavalBattleship}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="4" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="naval_battleship" />
+
+                            <Label Grid.Row="5" Grid.Column="0" Text="Carrier" />
+                            <Button Grid.Row="5" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="naval_carrier" />
+                            <Label Grid.Row="5" Grid.Column="2" Text="{Binding NavalCarrier}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="5" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="naval_carrier" />
+
+                            <Label Grid.Row="6" Grid.Column="0" Text="Fighter" />
+                            <Button Grid.Row="6" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="naval_fighter" />
+                            <Label Grid.Row="6" Grid.Column="2" Text="{Binding NavalFighter}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="6" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="naval_fighter" />
+
+                            <Label Grid.Row="7" Grid.Column="0" Text="Bomber" />
+                            <Button Grid.Row="7" Grid.Column="1" Text="-" Command="{Binding DecrementUnitCommand}" CommandParameter="naval_bomber" />
+                            <Label Grid.Row="7" Grid.Column="2" Text="{Binding NavalBomber}" HorizontalTextAlignment="Center" WidthRequest="40" />
+                            <Button Grid.Row="7" Grid.Column="3" Text="+" Command="{Binding IncrementUnitCommand}" CommandParameter="naval_bomber" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Search Options" FontAttributes="Bold" FontSize="18" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="Budget Override" FontAttributes="Bold" />
+                            <Entry Text="{Binding BudgetOverrideText, Mode=TwoWay}"
+                                   Placeholder="{Binding BudgetOverridePlaceholder}"
+                                   Keyboard="Numeric"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Search Battles" FontAttributes="Bold" />
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
+                                <Button Grid.Column="0" Text="-" Command="{Binding DecrementSimulationCountCommand}" />
+                                <Entry Grid.Column="1"
+                                       Text="{Binding SimulationCount, Mode=TwoWay}"
+                                       Keyboard="Numeric"
+                                       HorizontalTextAlignment="Center" />
+                                <Button Grid.Column="2" Text="+" Command="{Binding IncrementSimulationCountCommand}" />
+                                <Button Grid.Column="3" Text="Run" Command="{Binding RunCounterSearchCommand}" />
+                                <Button Grid.Column="4" Text="Cancel" Command="{Binding CancelSimulationCommand}" IsVisible="{Binding IsBusy}" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+                    <ProgressBar Progress="{Binding CounterSearchProgressFraction}" IsVisible="{Binding IsBusy}" />
+                    <Label Text="{Binding CounterSearchProgressText}" HorizontalTextAlignment="Center" />
+                    <Label Text="{Binding StatusMessage}" />
+                    <Button Text="View Results"
+                            Command="{Binding ViewResultsCommand}"
+                            IsEnabled="{Binding HasResults}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="Reset Army"
+                    Command="{Binding ResetCommand}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+

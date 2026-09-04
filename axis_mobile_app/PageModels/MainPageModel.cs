@@ -36,6 +36,8 @@ public partial class MainPageModel : ObservableObject
     [ObservableProperty] private List<ComparisonRow> _remainingUnitsRows = [];
     [ObservableProperty] private List<MetricRow> _summaryMetricRows = [];
 
+    private CancellationTokenSource? _cancellationTokenSource;
+
     public bool HasResults => BattleOutcomeRows.Count > 0;
 
     public int AttackerCost => CreateArmy(isAttacking: true).Cost;
@@ -73,6 +75,10 @@ public partial class MainPageModel : ObservableObject
             return;
         }
 
+        _cancellationTokenSource?.Dispose();
+        _cancellationTokenSource = new CancellationTokenSource();
+        var cancellationToken = _cancellationTokenSource.Token;
+
         IsBusy = true;
         StatusMessage = "Running simulation...";
 
@@ -84,9 +90,9 @@ public partial class MainPageModel : ObservableObject
             var stats = await Task.Run(() =>
             {
                 var simulation = new Simulation(attackingArmy, defendingArmy);
-                simulation.Run(SimulationCount);
+                simulation.Run(SimulationCount, cancellationToken: cancellationToken);
                 return simulation.Stats;
-            });
+            }, cancellationToken);
 
             PopulateResultsTables(stats);
             ResultsText = BuildResultsText(stats);
@@ -96,6 +102,11 @@ public partial class MainPageModel : ObservableObject
             OnPropertyChanged(nameof(HasResults));
 
             await Shell.Current.GoToAsync("//land/land-results-tab");
+        }
+        catch (OperationCanceledException)
+        {
+            StatusMessage = "Simulation canceled.";
+            ResultsText = "Simulation canceled.";
         }
         catch (Exception ex)
         {
@@ -109,8 +120,22 @@ public partial class MainPageModel : ObservableObject
         }
         finally
         {
+            _cancellationTokenSource?.Dispose();
+            _cancellationTokenSource = null;
             IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private void CancelSimulation()
+    {
+        if (!IsBusy)
+        {
+            return;
+        }
+
+        StatusMessage = "Canceling simulation...";
+        _cancellationTokenSource?.Cancel();
     }
 
     [RelayCommand]
@@ -123,6 +148,32 @@ public partial class MainPageModel : ObservableObject
         }
 
         await Shell.Current.GoToAsync("//land/land-results-tab");
+    }
+
+    [RelayCommand]
+    private void Reset()
+    {
+        AttackerInfantry = 0;
+        AttackerArtillery = 0;
+        AttackerTank = 0;
+        AttackerFighter = 0;
+        AttackerBomber = 0;
+        AttackerAntiAir = 0;
+        AttackerCruiser = 0;
+        AttackerBattleship = 0;
+
+        DefenderInfantry = 0;
+        DefenderArtillery = 0;
+        DefenderTank = 0;
+        DefenderFighter = 0;
+        DefenderBomber = 0;
+        DefenderAntiAir = 0;
+        DefenderCruiser = 0;
+        DefenderBattleship = 0;
+
+        OnPropertyChanged(nameof(AttackerCost));
+        OnPropertyChanged(nameof(DefenderCost));
+        StatusMessage = "All land units reset to zero.";
     }
 
     private void AdjustUnit(string key, int delta)

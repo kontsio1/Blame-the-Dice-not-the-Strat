@@ -34,6 +34,8 @@ public partial class NavalPageModel : ObservableObject
     [ObservableProperty] private List<ComparisonRow> _remainingUnitsRows = [];
     [ObservableProperty] private List<MetricRow> _summaryMetricRows = [];
 
+    private CancellationTokenSource? _cancellationTokenSource;
+
     public bool HasResults => BattleOutcomeRows.Count > 0;
 
     public int AttackerCost => CreateArmada(true).Cost;
@@ -71,6 +73,10 @@ public partial class NavalPageModel : ObservableObject
             return;
         }
 
+        _cancellationTokenSource?.Dispose();
+        _cancellationTokenSource = new CancellationTokenSource();
+        var cancellationToken = _cancellationTokenSource.Token;
+
         IsBusy = true;
         StatusMessage = "Running naval simulation...";
 
@@ -82,9 +88,9 @@ public partial class NavalPageModel : ObservableObject
             var stats = await Task.Run(() =>
             {
                 var simulation = new Simulation(attacking, defending);
-                simulation.Run(SimulationCount);
+                simulation.Run(SimulationCount, cancellationToken: cancellationToken);
                 return simulation.Stats;
-            });
+            }, cancellationToken);
 
             PopulateResultsTables(stats);
             StatusMessage = "Naval simulation complete.";
@@ -93,6 +99,10 @@ public partial class NavalPageModel : ObservableObject
             OnPropertyChanged(nameof(HasResults));
 
             await Shell.Current.GoToAsync("//naval/naval-results-tab");
+        }
+        catch (OperationCanceledException)
+        {
+            StatusMessage = "Simulation canceled.";
         }
         catch (Exception ex)
         {
@@ -105,8 +115,22 @@ public partial class NavalPageModel : ObservableObject
         }
         finally
         {
+            _cancellationTokenSource?.Dispose();
+            _cancellationTokenSource = null;
             IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private void CancelSimulation()
+    {
+        if (!IsBusy)
+        {
+            return;
+        }
+
+        StatusMessage = "Canceling simulation...";
+        _cancellationTokenSource?.Cancel();
     }
 
     [RelayCommand]
@@ -119,6 +143,32 @@ public partial class NavalPageModel : ObservableObject
         }
 
         await Shell.Current.GoToAsync("//naval/naval-results-tab");
+    }
+
+    [RelayCommand]
+    private void Reset()
+    {
+        AttackerTransport = 0;
+        AttackerSubmarine = 0;
+        AttackerDestroyer = 0;
+        AttackerCruiser = 0;
+        AttackerBattleship = 0;
+        AttackerCarrier = 0;
+        AttackerFighter = 0;
+        AttackerBomber = 0;
+
+        DefenderTransport = 0;
+        DefenderSubmarine = 0;
+        DefenderDestroyer = 0;
+        DefenderCruiser = 0;
+        DefenderBattleship = 0;
+        DefenderCarrier = 0;
+        DefenderFighter = 0;
+        DefenderBomber = 0;
+
+        OnPropertyChanged(nameof(AttackerCost));
+        OnPropertyChanged(nameof(DefenderCost));
+        StatusMessage = "All naval units reset to zero.";
     }
 
     private void AdjustUnit(string key, int delta)

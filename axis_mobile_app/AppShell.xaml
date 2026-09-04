@@ -33,6 +33,19 @@
         </Tab>
     </FlyoutItem>
 
+    <FlyoutItem Title="Find Counter" Route="counter">
+        <Tab Title="Setup" Route="counter-setup-tab">
+            <ShellContent
+                ContentTemplate="{DataTemplate pages:CounterMainPage}"
+                Route="counter-setup" />
+        </Tab>
+        <Tab Title="Results" Route="counter-results-tab">
+            <ShellContent
+                ContentTemplate="{DataTemplate pages:CounterResultsPage}"
+                Route="counter-results" />
+        </Tab>
+    </FlyoutItem>
+
     <FlyoutItem Title="About" Route="about">
         <ShellContent
             Title="About"
