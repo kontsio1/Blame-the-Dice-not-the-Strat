@@ -47,48 +47,6 @@ public class BattleOutcomeTests
 public class BattleResultTests
 {
     #region Constructor Tests
-    
-    [Fact]
-    public void BattleResult_ShouldStoreAttackingArmy()
-    {
-        // Arrange
-        var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5);
-        var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
-        var remainingAttackerUnits = attackingArmy.GetAllAliveUnits();
-        var remainingDefenderUnits = defendingArmy.GetAllAliveUnits();
-
-        // Act
-        var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
-            BattleOutcome.AttackerVictory,
-            remainingAttackerUnits,
-            remainingDefenderUnits);
-
-        // Assert
-        result.AttackingArmy.Should().BeSameAs(attackingArmy);
-    }
-
-    [Fact]
-    public void BattleResult_ShouldStoreDefendingArmy()
-    {
-        // Arrange
-        var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5);
-        var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
-        var remainingAttackerUnits = attackingArmy.GetAllAliveUnits();
-        var remainingDefenderUnits = defendingArmy.GetAllAliveUnits();
-
-        // Act
-        var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
-            BattleOutcome.AttackerVictory,
-            remainingAttackerUnits,
-            remainingDefenderUnits);
-
-        // Assert
-        result.DefendingArmy.Should().BeSameAs(defendingArmy);
-    }
 
     [Fact]
     public void BattleResult_ShouldStoreBattleOutcome()
@@ -101,8 +59,6 @@ public class BattleResultTests
 
         // Act
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.DefenderVictory,
             remainingAttackerUnits,
             remainingDefenderUnits);
@@ -122,8 +78,6 @@ public class BattleResultTests
 
         // Act
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.AttackerVictory,
             remainingAttackerUnits,
             remainingDefenderUnits);
@@ -144,8 +98,6 @@ public class BattleResultTests
 
         // Act
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.AttackerVictory,
             remainingAttackerUnits,
             remainingDefenderUnits);
@@ -170,8 +122,6 @@ public class BattleResultTests
 
         // Act
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.AttackerVictory,
             remainingAttackerUnits,
             remainingDefenderUnits);
@@ -191,8 +141,6 @@ public class BattleResultTests
 
         // Act
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.DefenderVictory,
             remainingAttackerUnits,
             remainingDefenderUnits);
@@ -211,8 +159,6 @@ public class BattleResultTests
 
         // Act
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.Draw,
             emptyList,
             emptyList);
@@ -232,8 +178,6 @@ public class BattleResultTests
 
         // Act
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.AttackerVictory,
             remainingAttackerUnits,
             new List<Unit>());
@@ -257,8 +201,6 @@ public class BattleResultTests
 
         // Act
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.AttackerVictory,
             attackingArmy.GetAllAliveUnits(),
             new List<Unit>());
@@ -276,8 +218,6 @@ public class BattleResultTests
 
         // Act
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.DefenderVictory,
             new List<Unit>(),
             defendingArmy.GetAllAliveUnits());
@@ -295,8 +235,6 @@ public class BattleResultTests
 
         // Act
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.Draw,
             new List<Unit>(),
             new List<Unit>());
@@ -509,7 +447,7 @@ public class IdenticalArmySelfBattleTests
     public void IdenticalArmies_ShouldNotHaveDominantOutcome()
     {
         // Arrange - Run multiple battles to ensure no one side dominates
-        int _totalBattles = 50;
+        int _totalBattles = 1000;
         int attackerWins = 0;
 
         // Act

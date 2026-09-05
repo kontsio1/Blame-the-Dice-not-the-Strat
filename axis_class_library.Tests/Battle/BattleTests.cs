@@ -133,7 +133,7 @@ public class BattleTests
     }
 
     [Fact]
-    public void Fight_ShouldReturnCorrectArmiesInResult()
+    public void Fight_ShouldReturnRemainingUnitsForBothSides()
     {
         // Arrange
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 3);
@@ -144,8 +144,8 @@ public class BattleTests
         var result = battle.Fight();
 
         // Assert
-        result.AttackingArmy.Should().BeSameAs(attackingArmy);
-        result.DefendingArmy.Should().BeSameAs(defendingArmy);
+        result.AttackerRemainingUnits.Should().NotBeNull();
+        result.DefenderRemainingUnits.Should().NotBeNull();
     }
 
     [Fact]

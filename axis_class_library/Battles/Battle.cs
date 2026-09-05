@@ -42,8 +42,6 @@ public class Battle
         }
 
         var battleInfo = new BattleResult(
-            AttackingArmy,
-            DefendingArmy,
             Outcome ?? BattleOutcome.Draw,
             AttackingArmy.GetAllAliveUnits(),
             DefendingArmy.GetAllAliveUnits()

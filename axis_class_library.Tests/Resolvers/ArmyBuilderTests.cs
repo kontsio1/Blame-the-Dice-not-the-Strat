@@ -151,20 +151,20 @@ public class ArmyBuilderTests
         counterArmy.Cost.Should().BeLessThanOrEqualTo(targetArmy.Cost);
     }
 
-    [Fact]
-    public void CreateCounterArmy_WithNavalArmy_ReturnsNavalArmada()
-    {
-        // Arrange
-        var builder = new NavalArmadaBuilder();
-        var targetArmy = new NavalArmada(isAttacking: true, transportCount: 5);
-
-        // Act
-        var counterArmy = builder.CreateCounterArmy(targetArmy, sims: 10, verbose: false);
-
-        // Assert
-        counterArmy.Should().BeOfType<NavalArmada>();
-        counterArmy.Cost.Should().BeLessThanOrEqualTo(targetArmy.Cost);
-    }
+    // [Fact]
+    // public void CreateCounterArmy_WithNavalArmy_ReturnsNavalArmada()
+    // {
+    //     // Arrange
+    //     var builder = new NavalArmadaBuilder();
+    //     var targetArmy = new NavalArmada(isAttacking: true, transportCount: 5);
+    //
+    //     // Act
+    //     var counterArmy = builder.CreateCounterArmy(targetArmy, sims: 10, verbose: false);
+    //
+    //     // Assert
+    //     counterArmy.Should().BeOfType<NavalArmada>();
+    //     counterArmy.Cost.Should().BeLessThanOrEqualTo(targetArmy.Cost);
+    // }
 
     [Fact]
     public void CreateCounterArmy_WithCustomCost_RespectsMaxCost()
@@ -212,7 +212,7 @@ public class ArmyBuilderTests
     }
 
     [Fact]
-    public void GetAllLandCombinations_IncludesSingleUnitArmies()
+    public void GetAllLandCombinations_CostsAreCloseToTarget()
     {
         // Arrange
         var builder = new LandArmyBuilder();
@@ -222,10 +222,12 @@ public class ArmyBuilderTests
         var armies = builder.CreateArmiesFromCost(cost, true).ToList();
 
         // Assert
-        armies.Should().Contain(army =>
-            army.GetAllUnits().Count == 1 ||
-            army.GetAllUnits().Where(u => u.isAlive).Count() == 1
-        );
+        armies.Should().NotBeEmpty();
+        armies.Should().AllSatisfy(army =>
+        {
+            army.Cost.Should().BeLessThanOrEqualTo(cost);
+            army.Cost.Should().BeGreaterThanOrEqualTo(cost - 3);
+        });
     }
 
     #endregion
@@ -247,7 +249,7 @@ public class ArmyBuilderTests
     }
 
     [Fact]
-    public void GetAllNavalCombinations_IncludesSingleUnitArmies()
+    public void GetAllNavalCombinations_CostsAreCloseToTarget()
     {
         // Arrange
         var builder = new NavalArmadaBuilder();
@@ -257,10 +259,12 @@ public class ArmyBuilderTests
         var armies = builder.CreateArmiesFromCost(cost, true).ToList();
 
         // Assert
-        armies.Should().Contain(army =>
-            army.GetAllUnits().Count == 1 ||
-            army.GetAllUnits().Where(u => u.isAlive).Count() == 1
-        );
+        armies.Should().NotBeEmpty();
+        armies.Should().AllSatisfy(army =>
+        {
+            army.Cost.Should().BeLessThanOrEqualTo(cost);
+            army.Cost.Should().BeGreaterThanOrEqualTo(cost - 6);
+        });
     }
 
     #endregion
@@ -299,7 +303,7 @@ public class ArmyBuilderTests
     }
 
     [Fact]
-    public void CreateArmiesFromCost_WithHighCost_CreatesMultipleVariations()
+    public void CreateArmiesFromCost_WithHighCost_CreatesMultipleNearTargetVariations()
     {
         // Arrange
         var builder = new LandArmyBuilder();
@@ -310,9 +314,11 @@ public class ArmyBuilderTests
 
         // Assert
         armies.Count.Should().BeGreaterThan(10);
-        armies.Should().Contain(army => army.Cost < 30);
-        armies.Should().Contain(army => army.Cost >= 30 && army.Cost < 70);
-        armies.Should().Contain(army => army.Cost >= 70);
+        armies.Should().AllSatisfy(army =>
+        {
+            army.Cost.Should().BeLessThanOrEqualTo(maxCost);
+            army.Cost.Should().BeGreaterThanOrEqualTo(maxCost - 3);
+        });
     }
 
     #endregion

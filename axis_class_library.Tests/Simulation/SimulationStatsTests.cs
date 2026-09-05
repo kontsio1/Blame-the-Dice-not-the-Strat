@@ -232,12 +232,10 @@ public class SimulationStatsTests
     public void RecordResult_AttackerVictory_ShouldIncrementAttackerWon()
     {
         // Arrange
-        var stats = new SimulationStats();
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
+        var stats = new SimulationStats(attackingArmy, defendingArmy);
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.AttackerVictory,
             attackingArmy.GetAllAliveUnits(),
             new List<Unit>());
@@ -252,15 +250,32 @@ public class SimulationStatsTests
     }
 
     [Fact]
+    public void RecordResult_ShouldStoreResultInBattleResults()
+    {
+        // Arrange
+        var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 3);
+        var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 1);
+        var stats = new SimulationStats(attackingArmy, defendingArmy);
+        var result = new BattleResult(
+            BattleOutcome.AttackerVictory,
+            attackingArmy.GetAllAliveUnits(),
+            new List<Unit>());
+
+        // Act
+        stats.RecordResult(result);
+
+        // Assert
+        stats.BattleResults.Should().ContainSingle().Which.Should().BeSameAs(result);
+    }
+
+    [Fact]
     public void RecordResult_DefenderVictory_ShouldIncrementDefenderWon()
     {
         // Arrange
-        var stats = new SimulationStats();
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 2);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 5);
+        var stats = new SimulationStats(attackingArmy, defendingArmy);
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.DefenderVictory,
             new List<Unit>(),
             defendingArmy.GetAllAliveUnits());
@@ -278,12 +293,10 @@ public class SimulationStatsTests
     public void RecordResult_Draw_ShouldIncrementDraw()
     {
         // Arrange
-        var stats = new SimulationStats();
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 3);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
+        var stats = new SimulationStats(attackingArmy, defendingArmy);
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.Draw,
             new List<Unit>(),
             new List<Unit>());
@@ -301,15 +314,15 @@ public class SimulationStatsTests
     public void RecordResult_MultipleResults_ShouldAccumulateCorrectly()
     {
         // Arrange
-        var stats = new SimulationStats();
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
+        var stats = new SimulationStats(attackingArmy, defendingArmy);
 
-        var attackerWin = new BattleResult(attackingArmy, defendingArmy, BattleOutcome.AttackerVictory, 
+        var attackerWin = new BattleResult( BattleOutcome.AttackerVictory, 
             attackingArmy.GetAllAliveUnits(), new List<Unit>());
-        var defenderWin = new BattleResult(attackingArmy, defendingArmy, BattleOutcome.DefenderVictory, 
+        var defenderWin = new BattleResult(BattleOutcome.DefenderVictory, 
             new List<Unit>(), defendingArmy.GetAllAliveUnits());
-        var draw = new BattleResult(attackingArmy, defendingArmy, BattleOutcome.Draw, 
+        var draw = new BattleResult(BattleOutcome.Draw, 
             new List<Unit>(), new List<Unit>());
 
         // Act
@@ -353,9 +366,9 @@ public class SimulationStatsTests
     public void RecordResult_ShouldTrackCpLoss()
     {
         // Arrange
-        var stats = new SimulationStats();
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 5);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 3);
+        var stats = new SimulationStats(attackingArmy, defendingArmy);
         
         // Simulate some casualties - attacker loses 2 infantry
         var attackerUnits = attackingArmy.GetAllAliveUnits();
@@ -364,8 +377,6 @@ public class SimulationStatsTests
         var remainingAttacker = attackerUnits.Where(u => u.isAlive).ToList();
         
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.AttackerVictory,
             remainingAttacker,
             new List<Unit>());
@@ -424,7 +435,34 @@ public class SimulationStatsTests
         // Assert
         stats.DefenderRemainingUnitsAvg.Should().BeOfType<UnitsStats>();
     }
-    
+
+    [Fact]
+    public void RemainingUnitsAverages_ShouldBeCalculatedFromBattleResults()
+    {
+        // Arrange
+        var stats = new SimulationStats();
+
+        var attackingArmy1 = new LandArmy(isAttacking: true, infantryCount: 4);
+        var defendingArmy1 = new LandArmy(isAttacking: false, infantryCount: 2);
+        var result1 = new BattleResult(
+            BattleOutcome.AttackerVictory,
+            attackingArmy1.GetAllAliveUnits().Take(4).ToList(),
+            defendingArmy1.GetAllAliveUnits().Take(1).ToList());
+
+        var attackingArmy2 = new LandArmy(isAttacking: true, infantryCount: 2);
+        var defendingArmy2 = new LandArmy(isAttacking: false, infantryCount: 3);
+        var result2 = new BattleResult(
+            BattleOutcome.DefenderVictory,
+            attackingArmy2.GetAllAliveUnits().Take(2).ToList(),
+            defendingArmy2.GetAllAliveUnits().Take(3).ToList());
+
+        stats.BattleResults = new List<BattleResult> { result1, result2 };
+
+        // Assert
+        stats.AttackerRemainingUnitsAvg.InfantryUnits.Should().Be(3); // (4 + 2) / 2
+        stats.DefenderRemainingUnitsAvg.InfantryUnits.Should().Be(2); // (1 + 3) / 2
+    }
+
     #endregion
 
     #region Army Properties Tests
@@ -477,12 +515,10 @@ public class SimulationStatsTests
     public void RecordResult_WithFullArmyRemaining_ShouldTrackCorrectly()
     {
         // Arrange
-        var stats = new SimulationStats();
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 3, tankCount: 2);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 1);
+        var stats = new SimulationStats(attackingArmy, defendingArmy);
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.AttackerVictory,
             attackingArmy.GetAllAliveUnits(),
             new List<Unit>());
@@ -499,12 +535,10 @@ public class SimulationStatsTests
     public void RecordResult_WithNoUnitsRemaining_ShouldTrackCorrectly()
     {
         // Arrange
-        var stats = new SimulationStats();
         var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 2);
         var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 2);
+        var stats = new SimulationStats(attackingArmy, defendingArmy);
         var result = new BattleResult(
-            attackingArmy,
-            defendingArmy,
             BattleOutcome.Draw,
             new List<Unit>(),
             new List<Unit>());
@@ -525,20 +559,20 @@ public class SimulationStatsTests
     public void SimulationStats_AfterMultipleBattles_ShouldCalculateAveragesCorrectly()
     {
         // Arrange
-        var stats = new SimulationStats();
         var attackingArmy1 = new LandArmy(isAttacking: true, infantryCount: 5);
         var defendingArmy1 = new LandArmy(isAttacking: false, infantryCount: 1);
+        var stats = new SimulationStats(attackingArmy1, defendingArmy1);
         
         // First battle - attacker wins with 4 remaining
         var remaining1 = attackingArmy1.GetAllAliveUnits().Take(4).ToList();
-        var result1 = new BattleResult(attackingArmy1, defendingArmy1, BattleOutcome.AttackerVictory, 
+        var result1 = new BattleResult(BattleOutcome.AttackerVictory, 
             remaining1, new List<Unit>());
         
         // Second battle - attacker wins with 2 remaining
         var attackingArmy2 = new LandArmy(isAttacking: true, infantryCount: 5);
         var defendingArmy2 = new LandArmy(isAttacking: false, infantryCount: 1);
         var remaining2 = attackingArmy2.GetAllAliveUnits().Take(2).ToList();
-        var result2 = new BattleResult(attackingArmy2, defendingArmy2, BattleOutcome.AttackerVictory, 
+        var result2 = new BattleResult( BattleOutcome.AttackerVictory, 
             remaining2, new List<Unit>());
 
         // Act
