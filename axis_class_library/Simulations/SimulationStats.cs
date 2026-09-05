@@ -8,16 +8,21 @@ namespace axis_console_project.Simulations;
 public class SimulationStats(Army? attackingArmy = null, Army? defendingArmy = null)
 {
     public Army? AttackingArmy { get; set; } = attackingArmy;
-    public Army? DefendingArmy { get; set; } =  defendingArmy;
+    public Army? DefendingArmy { get; set; } = defendingArmy;
     public int AttackerWon { get; set; } = 0;
     public int DefenderWon { get; set; } = 0;
     public int Draw { get; set; } = 0;
     public int TotalBattles => AttackerWon + DefenderWon + Draw;
+
     public double AttackerWonPercentage =>
         TotalBattles == 0 ? 0 : (AttackerWon * 100.0) / TotalBattles;
+
     public double DefenderWonPercentage =>
         TotalBattles == 0 ? 0 : (DefenderWon * 100.0) / TotalBattles;
+
     public double DrawPercentage => TotalBattles == 0 ? 0 : (Draw * 100.0) / TotalBattles;
+    
+    public List<BattleResult> BattleResults { get; set; } = new List<BattleResult>();
     private List<Units> AttackerRemainingUnits { get; set; } = new List<Units>();
     private List<Units> DefenderRemainingUnits { get; set; } = new List<Units>();
     private List<double> AttackerCpLoss { get; set; } = new List<double>();
@@ -26,7 +31,10 @@ public class SimulationStats(Army? attackingArmy = null, Army? defendingArmy = n
     public double DefenderAvgCpLoss => DefenderCpLoss.Count == 0 ? 0 : DefenderCpLoss.Average();
     public double WonPercentage(bool forAttacker = true) => forAttacker ? AttackerWonPercentage : DefenderWonPercentage;
     public double AvgCpLoss(bool forAttacker = true) => forAttacker ? AttackerAvgCpLoss : DefenderAvgCpLoss;
-    public double RemainingUnitsAvg(bool forAttacker = true) => forAttacker ? AttackerRemainingUnits.Count : DefenderRemainingUnits.Count;
+
+    public double RemainingUnitsAvg(bool forAttacker = true) =>
+        forAttacker ? AttackerRemainingUnits.Count : DefenderRemainingUnits.Count;
+
     public UnitsStats AttackerRemainingUnitsAvg =>
         new UnitsStats(
             infantryUnits: GetAverageUnits(AttackerRemainingUnits, u => u.InfantryUnits),
@@ -35,6 +43,7 @@ public class SimulationStats(Army? attackingArmy = null, Army? defendingArmy = n
             fighterUnits: GetAverageUnits(AttackerRemainingUnits, u => u.FighterUnits),
             bomberUnits: GetAverageUnits(AttackerRemainingUnits, u => u.BomberUnits)
         );
+
     public UnitsStats DefenderRemainingUnitsAvg =>
         new UnitsStats(
             infantryUnits: GetAverageUnits(DefenderRemainingUnits, u => u.InfantryUnits),
@@ -70,22 +79,62 @@ public class SimulationStats(Army? attackingArmy = null, Army? defendingArmy = n
                 Draw++;
                 break;
         }
+
         AttackerRemainingUnits.Add(result.AttackerRemainingUnits);
         AttackerCpLoss.Add(
-            result.AttackingArmy.GetAllUnits()
+            AttackingArmy.GetAllUnits()
                 .Where(unit => unit.ParticipatesInBattle)
                 .Sum(unit => unit.Cost) - result.AttackerRemainingUnits.Cost
         );
 
         DefenderRemainingUnits.Add(result.DefenderRemainingUnits);
         DefenderCpLoss.Add(
-            result.DefendingArmy.GetAllUnits()
+            DefendingArmy.GetAllUnits()
                 .Where(unit => unit.ParticipatesInBattle)
                 .Sum(unit => unit.Cost) - result.DefenderRemainingUnits.Cost
         );
     }
-    
-    
+
+    public void CreateProbabilityDistribution()
+    {
+        var samples = new List<int> { 5, 5, 2, 8, 5, 2, 1, 8, 5, 2 };
+
+        // 1. Get total count as a double to avoid integer division issues
+        double totalSamples = samples.Count;
+
+        // 2. Group by value and calculate the percentage distribution
+        var probabilityDistribution = samples
+            .GroupBy(x => x)
+            .Select(group => new
+            {
+                Value = group.Key,
+                Count = group.Count(),
+                Probability = group.Count() / totalSamples
+            })
+            .OrderByDescending(x => x.Probability) // Optional: Sort by highest probability
+            .ToList();
+
+        // Output the results
+        foreach (var item in probabilityDistribution)
+        {
+            Console.WriteLine($"Value: {item.Value} | Count: {item.Count} | Probability: {item.Probability:P2}");
+        }
+    }
+
+    public void HowLuckyWasThisOutcome(BattleResult result)
+    {
+        var orderedRemainingUnitsBattleOutcomes = AttackerRemainingUnits.Zip(DefenderRemainingUnits)
+            .OrderByDescending(t => t.First.Cost)
+            .ThenBy(t => t.Second.Cost)
+            .ToList();
+        // start of list -> attacker winning heavily
+        // end of list ->  defender winning heavily 
+
+        var startIndex = orderedRemainingUnitsBattleOutcomes.FindIndex(t =>
+            t.First.Cost == result.AttackerRemainingUnits.Cost && t.Second.Cost == result.DefenderRemainingUnits.Cost);
+        var endIndex = orderedRemainingUnitsBattleOutcomes.FindLastIndex(t =>
+            t.First.Cost == result.AttackerRemainingUnits.Cost && t.Second.Cost == result.DefenderRemainingUnits.Cost);
+    }
 
     public void Explain()
     {
