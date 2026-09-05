@@ -139,7 +139,7 @@
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Search Options" FontAttributes="Bold" FontSize="18" />
 
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Grid ColumnDefinitions="*" ColumnSpacing="12">
                         <VerticalStackLayout Grid.Column="0" Spacing="4">
                             <Label Text="Budget Override" FontAttributes="Bold" />
                             <Entry Text="{Binding BudgetOverrideText, Mode=TwoWay}"
@@ -147,8 +147,10 @@
                                    Keyboard="Numeric"
                                    HorizontalTextAlignment="Center" />
                         </VerticalStackLayout>
+                    </Grid>
 
-                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                    <Grid ColumnDefinitions="*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
                             <Label Text="Search Battles" FontAttributes="Bold" />
                             <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
                                 <Button Grid.Column="0" Text="-" Command="{Binding DecrementSimulationCountCommand}" />

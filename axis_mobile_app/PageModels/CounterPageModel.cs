@@ -5,6 +5,8 @@ using axis_console_project.Resolvers;
 using axis_console_project.Simulations;
 using axis_console_project.UnitTypes.Land;
 using axis_console_project.UnitTypes.Sea;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 
 namespace axis_mobile_app.PageModels;
 
@@ -52,10 +54,14 @@ public partial class CounterPageModel : ObservableObject
     [ObservableProperty] private List<ComparisonRow> _armyCompositionRows = [];
     [ObservableProperty] private List<ComparisonRow> _remainingUnitsRows = [];
     [ObservableProperty] private List<MetricRow> _summaryMetricRows = [];
+    [ObservableProperty] private ISeries[] _probabilityDistributionSeries = [];
+    [ObservableProperty] private Axis[] _probabilityDistributionXAxes = [];
+    [ObservableProperty] private Axis[] _probabilityDistributionYAxes = [];
 
     private bool _budgetOverrideIsCustom;
     private Army? _lastBestCounterArmy;
     private CancellationTokenSource? _cancellationTokenSource;
+    private SimulationStats? _lastMatchupStats;
 
     public CounterPageModel()
     {
@@ -326,6 +332,8 @@ public partial class CounterPageModel : ObservableObject
         ArmyCompositionRows = [];
         RemainingUnitsRows = [];
         SummaryMetricRows = [];
+        _lastMatchupStats = null;
+        UpdateProbabilityChart();
         OnPropertyChanged(nameof(HasResults));
         OnPropertyChanged(nameof(BestCounterCost));
     }
@@ -412,8 +420,19 @@ public partial class CounterPageModel : ObservableObject
             new MetricRow("Average Defender CP Loss", $"{matchupStats.DefenderAvgCpLoss:F2}")
         ];
 
+        _lastMatchupStats = matchupStats;
+        UpdateProbabilityChart();
+
         OnPropertyChanged(nameof(HasResults));
         OnPropertyChanged(nameof(BestCounterCost));
+    }
+
+    private void UpdateProbabilityChart()
+    {
+        var chartData = ProbabilityDistributionChartBuilder.Build(_lastMatchupStats);
+        ProbabilityDistributionSeries = chartData.Series;
+        ProbabilityDistributionXAxes = chartData.XAxes;
+        ProbabilityDistributionYAxes = chartData.YAxes;
     }
 
     private bool TryGetBudgetOverride(out int budget, out string errorMessage)

@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using axis_console_project.Armies;
 using axis_console_project.Simulations;
 using axis_console_project.UnitTypes.Sea;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 
 namespace axis_mobile_app.PageModels;
 
@@ -33,8 +35,12 @@ public partial class NavalPageModel : ObservableObject
     [ObservableProperty] private List<ComparisonRow> _armyCompositionRows = [];
     [ObservableProperty] private List<ComparisonRow> _remainingUnitsRows = [];
     [ObservableProperty] private List<MetricRow> _summaryMetricRows = [];
+    [ObservableProperty] private ISeries[] _probabilityDistributionSeries = [];
+    [ObservableProperty] private Axis[] _probabilityDistributionXAxes = [];
+    [ObservableProperty] private Axis[] _probabilityDistributionYAxes = [];
 
     private CancellationTokenSource? _cancellationTokenSource;
+    private SimulationStats? _lastSimulationStats;
 
     public bool HasResults => BattleOutcomeRows.Count > 0;
 
@@ -92,6 +98,7 @@ public partial class NavalPageModel : ObservableObject
                 return simulation.Stats;
             }, cancellationToken);
 
+            _lastSimulationStats = stats;
             PopulateResultsTables(stats);
             StatusMessage = "Naval simulation complete.";
             OnPropertyChanged(nameof(AttackerCost));
@@ -111,6 +118,8 @@ public partial class NavalPageModel : ObservableObject
             ArmyCompositionRows = [];
             RemainingUnitsRows = [];
             SummaryMetricRows = [];
+            _lastSimulationStats = null;
+            UpdateProbabilityChart();
             OnPropertyChanged(nameof(HasResults));
         }
         finally
@@ -230,6 +239,8 @@ public partial class NavalPageModel : ObservableObject
 
     private void PopulateResultsTables(SimulationStats stats)
     {
+        _lastSimulationStats = stats;
+
         var attackingUnits = stats.AttackingArmy?.Units ?? new Units(false);
         var defendingUnits = stats.DefendingArmy?.Units ?? new Units(false);
 
@@ -271,6 +282,16 @@ public partial class NavalPageModel : ObservableObject
             new MetricRow("Average Defender CP Loss", $"{stats.DefenderAvgCpLoss:F2}"),
             new MetricRow("Cost Comparison", $"{stats.AttackingArmy?.Cost ?? 0} CP vs {stats.DefendingArmy?.Cost ?? 0} CP")
         ];
+
+        UpdateProbabilityChart();
+    }
+
+    private void UpdateProbabilityChart()
+    {
+        var chartData = ProbabilityDistributionChartBuilder.Build(_lastSimulationStats);
+        ProbabilityDistributionSeries = chartData.Series;
+        ProbabilityDistributionXAxes = chartData.XAxes;
+        ProbabilityDistributionYAxes = chartData.YAxes;
     }
 
     private static int Clamp(int value) => Math.Max(0, value);

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
              xmlns:pageModels="clr-namespace:axis_mobile_app.PageModels"
              x:Class="axis_mobile_app.Pages.CounterResultsPage"
              x:DataType="pageModels:CounterPageModel"
@@ -139,6 +140,17 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Probability Distribution (Attacker IPC - Defender IPC)" FontAttributes="Bold" FontSize="18" />
+                    <lvc:CartesianChart Series="{Binding ProbabilityDistributionSeries}"
+                                        XAxes="{Binding ProbabilityDistributionXAxes}"
+                                        YAxes="{Binding ProbabilityDistributionYAxes}"
+                                        LegendPosition="Top"
+                                        HeightRequest="320" />
                 </VerticalStackLayout>
             </Border>
         </VerticalStackLayout>
