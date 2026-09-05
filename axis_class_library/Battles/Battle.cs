@@ -57,11 +57,11 @@ public class Battle
         {
             Outcome = BattleOutcome.Draw;
         }
-        if (!AttackingArmy.HasUnitsAlive())
+        else if (!AttackingArmy.HasUnitsAlive())
         {
             Outcome = BattleOutcome.DefenderVictory;
         }
-        if (!DefendingArmy.HasUnitsAlive())
+        else if (!DefendingArmy.HasUnitsAlive())
         {
             Outcome = BattleOutcome.AttackerVictory;
         }

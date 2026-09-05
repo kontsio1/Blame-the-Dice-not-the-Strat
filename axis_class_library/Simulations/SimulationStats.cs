@@ -84,6 +84,8 @@ public class SimulationStats(Army? attackingArmy = null, Army? defendingArmy = n
                 .Sum(unit => unit.Cost) - result.DefenderRemainingUnits.Cost
         );
     }
+    
+    
 
     public void Explain()
     {

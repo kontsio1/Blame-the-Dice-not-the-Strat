@@ -1,6 +1,6 @@
 namespace axis_console_project.UnitTypes.Land;
 
-public class Artillery : LandUnit
+public sealed class Artillery : LandUnit
 {
     public const int UnitCost = 4;
 

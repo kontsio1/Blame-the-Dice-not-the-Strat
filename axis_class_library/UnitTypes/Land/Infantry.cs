@@ -1,6 +1,6 @@
 namespace axis_console_project.UnitTypes.Land;
 
-public class Infantry : LandUnit
+public sealed class Infantry : LandUnit
 {
     public const int UnitCost = 3;
 

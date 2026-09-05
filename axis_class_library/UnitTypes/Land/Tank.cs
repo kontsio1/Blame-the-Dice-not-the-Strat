@@ -1,6 +1,6 @@
 namespace axis_console_project.UnitTypes.Land;
 
-public class Tank : LandUnit
+public sealed class Tank : LandUnit
 {
     public const int UnitCost = 5;
 
