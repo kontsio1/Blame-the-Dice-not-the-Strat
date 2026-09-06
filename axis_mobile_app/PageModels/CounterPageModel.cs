@@ -158,6 +158,25 @@ public partial class CounterPageModel : ObservableObject
         IsLandArmy ? "Land Army Composition" : "Naval Armada Composition";
     public string TargetArmyHeader => $"Target {TargetArmyTypeLabel} ({TargetArmyRoleLabel})";
     public string BudgetOverridePlaceholder => $"Default: {TargetCost}";
+    public string BudgetOverrideSummaryText
+    {
+        get
+        {
+            var currentBudget = int.TryParse(BudgetOverrideText.Trim(), out var parsedBudget)
+                ? parsedBudget
+                : TargetCost;
+
+            var delta = currentBudget - TargetCost;
+            var deltaText = delta switch
+            {
+                > 0 => $"+{delta}",
+                < 0 => delta.ToString(),
+                _ => "0",
+            };
+
+            return $"{currentBudget} IPC ({deltaText} vs target)";
+        }
+    }
     public string CounterSearchProgressText => $"{CounterSearchProgress:F2}%";
     public double CounterSearchProgressFraction => Math.Clamp(CounterSearchProgress / 100.0, 0, 1);
     public int TargetCost => IsLandArmy ? GetLandTargetCost() : GetNavalTargetCost();
@@ -468,6 +487,7 @@ public partial class CounterPageModel : ObservableObject
         _budgetOverrideIsCustom =
             !string.IsNullOrWhiteSpace(value)
             && !string.Equals(value.Trim(), TargetCost.ToString(), StringComparison.Ordinal);
+        OnPropertyChanged(nameof(BudgetOverrideSummaryText));
     }
 
     partial void OnCounterSearchProgressChanged(double value)
@@ -575,6 +595,7 @@ public partial class CounterPageModel : ObservableObject
         OnPropertyChanged(nameof(TargetArmyHeader));
         OnPropertyChanged(nameof(TargetCost));
         OnPropertyChanged(nameof(BudgetOverridePlaceholder));
+        OnPropertyChanged(nameof(BudgetOverrideSummaryText));
     }
 
     private void RefreshBudgetOverrideDefault()
@@ -823,13 +844,21 @@ public partial class CounterPageModel : ObservableObject
                 ),
             ];
 
+        var budgetDelta = bestCounterArmy.Cost - targetArmy.Cost;
+        var budgetDeltaText = budgetDelta switch
+        {
+            > 0 => $"+{budgetDelta}",
+            < 0 => budgetDelta.ToString(),
+            _ => "0",
+        };
+
         SummaryMetricRows =
         [
             new MetricRow("Target Army Type", TargetArmyTypeLabel),
             new MetricRow("Target Army Role", TargetArmyRoleLabel),
             new MetricRow("Target Cost", $"{targetArmy.Cost} IPC"),
             new MetricRow("Best Counter Cost", $"{bestCounterArmy.Cost} IPC"),
-            new MetricRow("Budget", $"{budgetUsed} IPC"),
+            new MetricRow("Budget", $"{budgetUsed} IPC ({budgetDeltaText} vs target)"),
             new MetricRow("Search Simulations", SimulationCount.ToString()),
             new MetricRow("Total Battles", matchupStats.TotalBattles.ToString()),
             new MetricRow("Average Attacker IPC Loss", $"{matchupStats.AttackerAvgCpLoss:F2}"),

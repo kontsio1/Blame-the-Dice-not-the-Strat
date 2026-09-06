@@ -164,6 +164,9 @@
                                 WidthRequest="36"
                                 Padding="0" />
                     </Grid>
+                    <Label Text="{Binding BudgetOverrideSummaryText}"
+                           FontSize="12"
+                           Opacity="0.8" />
 
                     <Grid ColumnDefinitions="*" ColumnSpacing="12">
                         <VerticalStackLayout Grid.Column="0" Spacing="4">
