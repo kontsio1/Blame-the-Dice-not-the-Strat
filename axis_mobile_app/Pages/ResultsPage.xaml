@@ -17,7 +17,7 @@
             <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Battle Outcomes" FontAttributes="Bold" FontSize="18" />
-                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                    <Grid ColumnDefinitions="*,72,96" ColumnSpacing="8" HorizontalOptions="Fill">
                         <Label Grid.Column="0" Text="Result" FontAttributes="Bold" />
                         <Label Grid.Column="1" Text="Count" FontAttributes="Bold" HorizontalTextAlignment="End" />
                         <Label Grid.Column="2" Text="Percentage" FontAttributes="Bold" HorizontalTextAlignment="End" />
@@ -25,7 +25,7 @@
                     <CollectionView ItemsSource="{Binding BattleOutcomeRows}" SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="pageModels:OutcomeRow">
-                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Padding="0,2">
+                                <Grid ColumnDefinitions="*,72,96" ColumnSpacing="8" Padding="0,2" HorizontalOptions="Fill">
                                     <Label Grid.Column="0" Text="{Binding Result}" />
                                     <Label Grid.Column="1" Text="{Binding Count}" HorizontalTextAlignment="End" />
                                     <Label Grid.Column="2" Text="{Binding Percentage}" HorizontalTextAlignment="End" />
@@ -39,14 +39,14 @@
             <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Summary Metrics" FontAttributes="Bold" FontSize="18" />
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <Grid ColumnDefinitions="*,150" ColumnSpacing="8" HorizontalOptions="Fill">
                         <Label Grid.Column="0" Text="Metric" FontAttributes="Bold" />
                         <Label Grid.Column="1" Text="Value" FontAttributes="Bold" HorizontalTextAlignment="End" />
                     </Grid>
                     <CollectionView ItemsSource="{Binding SummaryMetricRows}" SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="pageModels:MetricRow">
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,2">
+                                <Grid ColumnDefinitions="*,150" ColumnSpacing="8" Padding="0,2" HorizontalOptions="Fill">
                                     <Label Grid.Column="0" Text="{Binding Metric}" />
                                     <Label Grid.Column="1" Text="{Binding Value}" HorizontalTextAlignment="End" />
                                 </Grid>
@@ -59,7 +59,7 @@
             <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Average Remaining Units" FontAttributes="Bold" FontSize="18" />
-                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                    <Grid ColumnDefinitions="*,72,72" ColumnSpacing="8" HorizontalOptions="Fill">
                         <Label Grid.Column="0" Text="Unit" FontAttributes="Bold" />
                         <Label Grid.Column="1" Text="Attacker" FontAttributes="Bold" HorizontalTextAlignment="End" />
                         <Label Grid.Column="2" Text="Defender" FontAttributes="Bold" HorizontalTextAlignment="End" />
@@ -67,7 +67,7 @@
                     <CollectionView ItemsSource="{Binding RemainingUnitsRows}" SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="pageModels:ComparisonRow">
-                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Padding="0,2">
+                                <Grid ColumnDefinitions="*,72,72" ColumnSpacing="8" Padding="0,2" HorizontalOptions="Fill">
                                     <Label Grid.Column="0" Text="{Binding Unit}" />
                                     <Label Grid.Column="1" Text="{Binding Attacker}" HorizontalTextAlignment="End" />
                                     <Label Grid.Column="2" Text="{Binding Defender}" HorizontalTextAlignment="End" />
@@ -188,9 +188,9 @@
                     <CollectionView ItemsSource="{Binding LuckyMetricRows}" SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="pageModels:LuckyMetricRow">
-                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Padding="0,2">
+                                <Grid ColumnDefinitions="*,24,90" ColumnSpacing="8" Padding="0,2" HorizontalOptions="Fill">
                                     <Label Grid.Column="0" Text="{Binding Metric}" />
-                                    <Label Grid.Column="1" Text="ⓘ" FontAttributes="Bold" ToolTipProperties.Text="{Binding Tooltip}" />
+                                    <Label Grid.Column="1" Text="ⓘ" FontAttributes="Bold" ToolTipProperties.Text="{Binding Tooltip}" HorizontalTextAlignment="Center" />
                                     <Label Grid.Column="2" Text="{Binding Value}" HorizontalTextAlignment="End" />
                                 </Grid>
                             </DataTemplate>

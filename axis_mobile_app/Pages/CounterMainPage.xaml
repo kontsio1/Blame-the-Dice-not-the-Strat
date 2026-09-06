@@ -11,7 +11,7 @@
             <Label Text="Find Counter"
                    FontSize="24"
                    FontAttributes="Bold" />
-            <Label Text="Choose the target army type and role, build the composition, then search for the best counter." 
+            <Label Text="Finds the amry that has the best chances to defeat the target army in battle - a 'counter' army" 
                    FontSize="14"
                    Opacity="0.8" />
 

@@ -1,10 +1,10 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using axis_console_project.Armies;
 using axis_console_project.Resolvers;
 using axis_console_project.Simulations;
 using axis_console_project.UnitTypes.Land;
 using axis_console_project.UnitTypes.Sea;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 
@@ -15,50 +15,123 @@ public partial class CounterPageModel : ObservableObject
     public IReadOnlyList<string> ArmyTypeOptions { get; } = ["Land", "Naval"];
     public IReadOnlyList<string> TargetRoleOptions { get; } = ["Attacking", "Defending"];
 
-    [ObservableProperty] private string _selectedArmyType = "Land";
-    [ObservableProperty] private string _selectedTargetRole = "Attacking";
+    [ObservableProperty]
+    private string _selectedArmyType = "Land";
 
-    [ObservableProperty] private int _landInfantry;
-    [ObservableProperty] private int _landArtillery;
-    [ObservableProperty] private int _landTank;
-    [ObservableProperty] private int _landFighter;
-    [ObservableProperty] private int _landBomber;
-    [ObservableProperty] private int _landAntiAir;
-    [ObservableProperty] private int _landCruiser;
-    [ObservableProperty] private int _landBattleship;
+    [ObservableProperty]
+    private string _selectedTargetRole = "Attacking";
 
-    [ObservableProperty] private int _navalTransport;
-    [ObservableProperty] private int _navalSubmarine;
-    [ObservableProperty] private int _navalDestroyer;
-    [ObservableProperty] private int _navalCruiser;
-    [ObservableProperty] private int _navalBattleship;
-    [ObservableProperty] private int _navalCarrier;
-    [ObservableProperty] private int _navalFighter;
-    [ObservableProperty] private int _navalBomber;
+    [ObservableProperty]
+    private int _landInfantry;
 
-    [ObservableProperty] private int _simulationCount = 1000;
-    [ObservableProperty] private string _budgetOverrideText = string.Empty;
-    [ObservableProperty] private bool _isBusy;
-    [ObservableProperty] private double _counterSearchProgress;
-    [ObservableProperty] private string _statusMessage = "Configure a target army and run a counter search.";
+    [ObservableProperty]
+    private int _landArtillery;
 
-    [ObservableProperty] private string _targetArmySummaryText = string.Empty;
-    [ObservableProperty] private string _targetArmyCompositionText = string.Empty;
-    [ObservableProperty] private string _targetArmyCostText = string.Empty;
-    [ObservableProperty] private string _bestCounterArmySummaryText = string.Empty;
-    [ObservableProperty] private string _bestCounterArmyCompositionText = string.Empty;
-    [ObservableProperty] private string _bestCounterArmyCostText = string.Empty;
-    [ObservableProperty] private string _resultsSummaryText = string.Empty;
-    [ObservableProperty] private string _actualOutcomeStatusMessage = "Enter the actual remaining units, then analyze the result.";
+    [ObservableProperty]
+    private int _landTank;
 
-    [ObservableProperty] private List<OutcomeRow> _battleOutcomeRows = [];
-    [ObservableProperty] private List<ComparisonRow> _armyCompositionRows = [];
-    [ObservableProperty] private List<ComparisonRow> _remainingUnitsRows = [];
-    [ObservableProperty] private List<MetricRow> _summaryMetricRows = [];
-    [ObservableProperty] private List<LuckyMetricRow> _luckyMetricRows = [];
-    [ObservableProperty] private ISeries[] _probabilityDistributionSeries = [];
-    [ObservableProperty] private Axis[] _probabilityDistributionXAxes = [];
-    [ObservableProperty] private Axis[] _probabilityDistributionYAxes = [];
+    [ObservableProperty]
+    private int _landFighter;
+
+    [ObservableProperty]
+    private int _landBomber;
+
+    [ObservableProperty]
+    private int _landAntiAir;
+
+    [ObservableProperty]
+    private int _landCruiser;
+
+    [ObservableProperty]
+    private int _landBattleship;
+
+    [ObservableProperty]
+    private int _navalTransport;
+
+    [ObservableProperty]
+    private int _navalSubmarine;
+
+    [ObservableProperty]
+    private int _navalDestroyer;
+
+    [ObservableProperty]
+    private int _navalCruiser;
+
+    [ObservableProperty]
+    private int _navalBattleship;
+
+    [ObservableProperty]
+    private int _navalCarrier;
+
+    [ObservableProperty]
+    private int _navalFighter;
+
+    [ObservableProperty]
+    private int _navalBomber;
+
+    [ObservableProperty]
+    private int _simulationCount = 1000;
+
+    [ObservableProperty]
+    private string _budgetOverrideText = string.Empty;
+
+    [ObservableProperty]
+    private bool _isBusy;
+
+    [ObservableProperty]
+    private double _counterSearchProgress;
+
+    [ObservableProperty]
+    private string _statusMessage = "Configure a target army and run a counter search.";
+
+    [ObservableProperty]
+    private string _targetArmySummaryText = string.Empty;
+
+    [ObservableProperty]
+    private string _targetArmyCompositionText = string.Empty;
+
+    [ObservableProperty]
+    private string _targetArmyCostText = string.Empty;
+
+    [ObservableProperty]
+    private string _bestCounterArmySummaryText = string.Empty;
+
+    [ObservableProperty]
+    private string _bestCounterArmyCompositionText = string.Empty;
+
+    [ObservableProperty]
+    private string _bestCounterArmyCostText = string.Empty;
+
+    [ObservableProperty]
+    private string _resultsSummaryText = string.Empty;
+
+    [ObservableProperty]
+    private string _actualOutcomeStatusMessage =
+        "Enter the actual remaining units, then analyze the result.";
+
+    [ObservableProperty]
+    private List<OutcomeRow> _battleOutcomeRows = [];
+
+    [ObservableProperty]
+    private List<ComparisonRow> _armyCompositionRows = [];
+
+    [ObservableProperty]
+    private List<ComparisonRow> _remainingUnitsRows = [];
+
+    [ObservableProperty]
+    private List<MetricRow> _summaryMetricRows = [];
+
+    [ObservableProperty]
+    private List<LuckyMetricRow> _luckyMetricRows = [];
+
+    [ObservableProperty]
+    private ISeries[] _probabilityDistributionSeries = [];
+
+    [ObservableProperty]
+    private Axis[] _probabilityDistributionXAxes = [];
+
+    [ObservableProperty]
+    private Axis[] _probabilityDistributionYAxes = [];
 
     private bool _budgetOverrideIsCustom;
     private Army? _lastBestCounterArmy;
@@ -81,7 +154,8 @@ public partial class CounterPageModel : ObservableObject
     public bool IsTargetDefending => !IsTargetAttacking;
     public string TargetArmyTypeLabel => IsLandArmy ? "Land Army" : "Naval Armada";
     public string TargetArmyRoleLabel => IsTargetAttacking ? "Attacking" : "Defending";
-    public string TargetCompositionTitle => IsLandArmy ? "Land Army Composition" : "Naval Armada Composition";
+    public string TargetCompositionTitle =>
+        IsLandArmy ? "Land Army Composition" : "Naval Armada Composition";
     public string TargetArmyHeader => $"Target {TargetArmyTypeLabel} ({TargetArmyRoleLabel})";
     public string BudgetOverridePlaceholder => $"Default: {TargetCost}";
     public string CounterSearchProgressText => $"{CounterSearchProgress:F2}%";
@@ -153,27 +227,34 @@ public partial class CounterPageModel : ObservableObject
 
         try
         {
-            IProgress<double> progress = new Progress<double>(value => CounterSearchProgress = value);
-            var bestCounterArmy = await Task.Run(() =>
-                builder.CreateCounterArmy(
-                    targetArmy,
-                    cost: budget,
-                    sims: SimulationCount,
-                    verbose: false,
-                    progressCallback: progress.Report,
-                    cancellationToken: cancellationToken
-                )
-            , cancellationToken);
+            IProgress<double> progress = new Progress<double>(value =>
+                CounterSearchProgress = value
+            );
+            var bestCounterArmy = await Task.Run(
+                () =>
+                    builder.CreateCounterArmy(
+                        targetArmy,
+                        cost: budget,
+                        sims: SimulationCount,
+                        verbose: false,
+                        progressCallback: progress.Report,
+                        cancellationToken: cancellationToken
+                    ),
+                cancellationToken
+            );
 
             StatusMessage = "Running the final matchup simulation...";
             CounterSearchProgress = 0;
 
-            var matchupStats = await Task.Run(() =>
-            {
-                var simulation = new Simulation(bestCounterArmy, targetArmy);
-                simulation.Run(SimulationCount, progress.Report, cancellationToken);
-                return simulation.Stats;
-            }, cancellationToken);
+            var matchupStats = await Task.Run(
+                () =>
+                {
+                    var simulation = new Simulation(bestCounterArmy, targetArmy);
+                    simulation.Run(SimulationCount, progress.Report, cancellationToken);
+                    return simulation.Stats;
+                },
+                cancellationToken
+            );
 
             ResetActualOutcomeAnalysisState();
             PopulateResults(targetArmy, bestCounterArmy, matchupStats, budget);
@@ -274,8 +355,10 @@ public partial class CounterPageModel : ObservableObject
 
         if (IsLandArmy)
         {
-            if (_lastMatchupStats.AttackingArmy is not LandArmy attackingArmy ||
-                _lastMatchupStats.DefendingArmy is not LandArmy defendingArmy)
+            if (
+                _lastMatchupStats.AttackingArmy is not LandArmy attackingArmy
+                || _lastMatchupStats.DefendingArmy is not LandArmy defendingArmy
+            )
             {
                 ActualOutcomeStatusMessage = "The last counter matchup was not a land battle.";
                 return;
@@ -287,13 +370,21 @@ public partial class CounterPageModel : ObservableObject
                 attackingArmy.Units,
                 defendingArmy.Units
             );
-            actualAttackerArmy = ActualOutcomeAnalysisHelper.CreateLandArmy(ActualAttackerRemaining, true);
-            actualDefenderArmy = ActualOutcomeAnalysisHelper.CreateLandArmy(ActualDefenderRemaining, false);
+            actualAttackerArmy = ActualOutcomeAnalysisHelper.CreateLandArmy(
+                ActualAttackerRemaining,
+                true
+            );
+            actualDefenderArmy = ActualOutcomeAnalysisHelper.CreateLandArmy(
+                ActualDefenderRemaining,
+                false
+            );
         }
         else
         {
-            if (_lastMatchupStats.AttackingArmy is not NavalArmada attackingArmada ||
-                _lastMatchupStats.DefendingArmy is not NavalArmada defendingArmada)
+            if (
+                _lastMatchupStats.AttackingArmy is not NavalArmada attackingArmada
+                || _lastMatchupStats.DefendingArmy is not NavalArmada defendingArmada
+            )
             {
                 ActualOutcomeStatusMessage = "The last counter matchup was not a naval battle.";
                 return;
@@ -305,8 +396,14 @@ public partial class CounterPageModel : ObservableObject
                 attackingArmada.Units,
                 defendingArmada.Units
             );
-            actualAttackerArmy = ActualOutcomeAnalysisHelper.CreateNavalArmada(ActualAttackerRemaining, true);
-            actualDefenderArmy = ActualOutcomeAnalysisHelper.CreateNavalArmada(ActualDefenderRemaining, false);
+            actualAttackerArmy = ActualOutcomeAnalysisHelper.CreateNavalArmada(
+                ActualAttackerRemaining,
+                true
+            );
+            actualDefenderArmy = ActualOutcomeAnalysisHelper.CreateNavalArmada(
+                ActualDefenderRemaining,
+                false
+            );
         }
 
         if (validationError is not null)
@@ -368,7 +465,9 @@ public partial class CounterPageModel : ObservableObject
 
     partial void OnBudgetOverrideTextChanged(string value)
     {
-        _budgetOverrideIsCustom = !string.IsNullOrWhiteSpace(value) && !string.Equals(value.Trim(), TargetCost.ToString(), StringComparison.Ordinal);
+        _budgetOverrideIsCustom =
+            !string.IsNullOrWhiteSpace(value)
+            && !string.Equals(value.Trim(), TargetCost.ToString(), StringComparison.Ordinal);
     }
 
     partial void OnCounterSearchProgressChanged(double value)
@@ -382,23 +481,55 @@ public partial class CounterPageModel : ObservableObject
     {
         switch (key)
         {
-            case "land_infantry": LandInfantry = Clamp(LandInfantry + delta); break;
-            case "land_artillery": LandArtillery = Clamp(LandArtillery + delta); break;
-            case "land_tank": LandTank = Clamp(LandTank + delta); break;
-            case "land_fighter": LandFighter = Clamp(LandFighter + delta); break;
-            case "land_bomber": LandBomber = Clamp(LandBomber + delta); break;
-            case "land_antiair": LandAntiAir = Clamp(LandAntiAir + delta); break;
-            case "land_cruiser": LandCruiser = Clamp(LandCruiser + delta); break;
-            case "land_battleship": LandBattleship = Clamp(LandBattleship + delta); break;
+            case "land_infantry":
+                LandInfantry = Clamp(LandInfantry + delta);
+                break;
+            case "land_artillery":
+                LandArtillery = Clamp(LandArtillery + delta);
+                break;
+            case "land_tank":
+                LandTank = Clamp(LandTank + delta);
+                break;
+            case "land_fighter":
+                LandFighter = Clamp(LandFighter + delta);
+                break;
+            case "land_bomber":
+                LandBomber = Clamp(LandBomber + delta);
+                break;
+            case "land_antiair":
+                LandAntiAir = Clamp(LandAntiAir + delta);
+                break;
+            case "land_cruiser":
+                LandCruiser = Clamp(LandCruiser + delta);
+                break;
+            case "land_battleship":
+                LandBattleship = Clamp(LandBattleship + delta);
+                break;
 
-            case "naval_transport": NavalTransport = Clamp(NavalTransport + delta); break;
-            case "naval_submarine": NavalSubmarine = Clamp(NavalSubmarine + delta); break;
-            case "naval_destroyer": NavalDestroyer = Clamp(NavalDestroyer + delta); break;
-            case "naval_cruiser": NavalCruiser = Clamp(NavalCruiser + delta); break;
-            case "naval_battleship": NavalBattleship = Clamp(NavalBattleship + delta); break;
-            case "naval_carrier": NavalCarrier = Clamp(NavalCarrier + delta); break;
-            case "naval_fighter": NavalFighter = Clamp(NavalFighter + delta); break;
-            case "naval_bomber": NavalBomber = Clamp(NavalBomber + delta); break;
+            case "naval_transport":
+                NavalTransport = Clamp(NavalTransport + delta);
+                break;
+            case "naval_submarine":
+                NavalSubmarine = Clamp(NavalSubmarine + delta);
+                break;
+            case "naval_destroyer":
+                NavalDestroyer = Clamp(NavalDestroyer + delta);
+                break;
+            case "naval_cruiser":
+                NavalCruiser = Clamp(NavalCruiser + delta);
+                break;
+            case "naval_battleship":
+                NavalBattleship = Clamp(NavalBattleship + delta);
+                break;
+            case "naval_carrier":
+                NavalCarrier = Clamp(NavalCarrier + delta);
+                break;
+            case "naval_fighter":
+                NavalFighter = Clamp(NavalFighter + delta);
+                break;
+            case "naval_bomber":
+                NavalBomber = Clamp(NavalBomber + delta);
+                break;
         }
 
         RefreshDerivedState();
@@ -479,23 +610,39 @@ public partial class CounterPageModel : ObservableObject
         OnPropertyChanged(nameof(BestCounterCost));
     }
 
-    private void PopulateResults(Army targetArmy, Army bestCounterArmy, SimulationStats matchupStats, int budgetUsed)
+    private void PopulateResults(
+        Army targetArmy,
+        Army bestCounterArmy,
+        SimulationStats matchupStats,
+        int budgetUsed
+    )
     {
         _lastBestCounterArmy = bestCounterArmy;
 
-        TargetArmySummaryText = $"Target {GetArmyTypeLabel(targetArmy)} ({GetArmyRoleLabel(targetArmy)})";
+        TargetArmySummaryText =
+            $"Target {GetArmyTypeLabel(targetArmy)} ({GetArmyRoleLabel(targetArmy)})";
         TargetArmyCompositionText = targetArmy.Units.ToString();
         TargetArmyCostText = $"{targetArmy.Cost} IPC";
-        BestCounterArmySummaryText = $"Best Counter {GetArmyTypeLabel(bestCounterArmy)} ({GetArmyRoleLabel(bestCounterArmy)})";
+        BestCounterArmySummaryText =
+            $"Best Counter {GetArmyTypeLabel(bestCounterArmy)} ({GetArmyRoleLabel(bestCounterArmy)})";
         BestCounterArmyCompositionText = bestCounterArmy.Units.ToString();
         BestCounterArmyCostText = $"{bestCounterArmy.Cost} IPC";
-        ResultsSummaryText = $"Budget used: {budgetUsed} IPC • Search simulations: {SimulationCount} • Final matchup simulations: {matchupStats.TotalBattles}";
+        ResultsSummaryText =
+            $"Budget used: {budgetUsed} IPC • Search simulations: {SimulationCount} • Final matchup simulations: {matchupStats.TotalBattles}";
 
         BattleOutcomeRows =
         [
-            new OutcomeRow("Attacker Wins", matchupStats.AttackerWon, $"{matchupStats.AttackerWonPercentage:F2}%"),
-            new OutcomeRow("Defender Wins", matchupStats.DefenderWon, $"{matchupStats.DefenderWonPercentage:F2}%"),
-            new OutcomeRow("Draws", matchupStats.Draw, $"{matchupStats.DrawPercentage:F2}%")
+            new OutcomeRow(
+                "Attacker Wins",
+                matchupStats.AttackerWon,
+                $"{matchupStats.AttackerWonPercentage:F2}%"
+            ),
+            new OutcomeRow(
+                "Defender Wins",
+                matchupStats.DefenderWon,
+                $"{matchupStats.DefenderWonPercentage:F2}%"
+            ),
+            new OutcomeRow("Draws", matchupStats.Draw, $"{matchupStats.DrawPercentage:F2}%"),
         ];
 
         var targetUnits = targetArmy.Units;
@@ -503,49 +650,177 @@ public partial class CounterPageModel : ObservableObject
         ArmyCompositionRows = IsLandArmy
             ?
             [
-                new ComparisonRow("Infantry", targetUnits.InfantryUnits.Count.ToString(), counterUnits.InfantryUnits.Count.ToString()),
-                new ComparisonRow("Artillery", targetUnits.ArtilleryUnits.Count.ToString(), counterUnits.ArtilleryUnits.Count.ToString()),
-                new ComparisonRow("Tank", targetUnits.TankUnits.Count.ToString(), counterUnits.TankUnits.Count.ToString()),
-                new ComparisonRow("Fighter", targetUnits.FighterUnits.Count.ToString(), counterUnits.FighterUnits.Count.ToString()),
-                new ComparisonRow("Bomber", targetUnits.BomberUnits.Count.ToString(), counterUnits.BomberUnits.Count.ToString()),
-                new ComparisonRow("Anti-Air", targetUnits.AntiAirUnits.Count.ToString(), counterUnits.AntiAirUnits.Count.ToString()),
-                new ComparisonRow("Cruiser", targetUnits.CruiserUnits.Count.ToString(), counterUnits.CruiserUnits.Count.ToString()),
-                new ComparisonRow("Battleship", targetUnits.BattleshipUnits.Count.ToString(), counterUnits.BattleshipUnits.Count.ToString())
+                new ComparisonRow(
+                    "Infantry",
+                    targetUnits.InfantryUnits.Count.ToString(),
+                    counterUnits.InfantryUnits.Count.ToString()
+                ),
+                new ComparisonRow(
+                    "Artillery",
+                    targetUnits.ArtilleryUnits.Count.ToString(),
+                    counterUnits.ArtilleryUnits.Count.ToString()
+                ),
+                new ComparisonRow(
+                    "Tank",
+                    targetUnits.TankUnits.Count.ToString(),
+                    counterUnits.TankUnits.Count.ToString()
+                ),
+                new ComparisonRow(
+                    "Fighter",
+                    targetUnits.FighterUnits.Count.ToString(),
+                    counterUnits.FighterUnits.Count.ToString()
+                ),
+                new ComparisonRow(
+                    "Bomber",
+                    targetUnits.BomberUnits.Count.ToString(),
+                    counterUnits.BomberUnits.Count.ToString()
+                ),
+                new ComparisonRow(
+                    "Anti-Air",
+                    targetUnits.AntiAirUnits.Count.ToString(),
+                    counterUnits.AntiAirUnits.Count.ToString()
+                ),
+                new ComparisonRow(
+                    "Cruiser",
+                    targetUnits.CruiserUnits.Count.ToString(),
+                    counterUnits.CruiserUnits.Count.ToString()
+                ),
+                new ComparisonRow(
+                    "Battleship",
+                    targetUnits.BattleshipUnits.Count.ToString(),
+                    counterUnits.BattleshipUnits.Count.ToString()
+                ),
             ]
             :
             [
-                new ComparisonRow("Transport", targetUnits.TransportUnits.Count.ToString(), counterUnits.TransportUnits.Count.ToString()),
-                new ComparisonRow("Submarine", targetUnits.SubmarineUnits.Count.ToString(), counterUnits.SubmarineUnits.Count.ToString()),
-                new ComparisonRow("Destroyer", targetUnits.DestroyerUnits.Count.ToString(), counterUnits.DestroyerUnits.Count.ToString()),
-                new ComparisonRow("Cruiser", targetUnits.CruiserUnits.Count.ToString(), counterUnits.CruiserUnits.Count.ToString()),
-                new ComparisonRow("Battleship", targetUnits.BattleshipUnits.Count.ToString(), counterUnits.BattleshipUnits.Count.ToString()),
-                new ComparisonRow("Carrier", targetUnits.AircraftCarrierUnits.Count.ToString(), counterUnits.AircraftCarrierUnits.Count.ToString()),
-                new ComparisonRow("Fighter", targetUnits.FighterUnits.Count.ToString(), counterUnits.FighterUnits.Count.ToString()),
-                new ComparisonRow("Bomber", targetUnits.BomberUnits.Count.ToString(), counterUnits.BomberUnits.Count.ToString())
+                new ComparisonRow(
+                    "Transport",
+                    targetUnits.TransportUnits.Count.ToString(),
+                    counterUnits.TransportUnits.Count.ToString()
+                ),
+                new ComparisonRow(
+                    "Submarine",
+                    targetUnits.SubmarineUnits.Count.ToString(),
+                    counterUnits.SubmarineUnits.Count.ToString()
+                ),
+                new ComparisonRow(
+                    "Destroyer",
+                    targetUnits.DestroyerUnits.Count.ToString(),
+                    counterUnits.DestroyerUnits.Count.ToString()
+                ),
+                new ComparisonRow(
+                    "Cruiser",
+                    targetUnits.CruiserUnits.Count.ToString(),
+                    counterUnits.CruiserUnits.Count.ToString()
+                ),
+                new ComparisonRow(
+                    "Battleship",
+                    targetUnits.BattleshipUnits.Count.ToString(),
+                    counterUnits.BattleshipUnits.Count.ToString()
+                ),
+                new ComparisonRow(
+                    "Carrier",
+                    targetUnits.AircraftCarrierUnits.Count.ToString(),
+                    counterUnits.AircraftCarrierUnits.Count.ToString()
+                ),
+                new ComparisonRow(
+                    "Fighter",
+                    targetUnits.FighterUnits.Count.ToString(),
+                    counterUnits.FighterUnits.Count.ToString()
+                ),
+                new ComparisonRow(
+                    "Bomber",
+                    targetUnits.BomberUnits.Count.ToString(),
+                    counterUnits.BomberUnits.Count.ToString()
+                ),
             ];
 
         RemainingUnitsRows = IsLandArmy
             ?
             [
-                new ComparisonRow("Infantry", $"{matchupStats.AttackerRemainingUnitsAvg.InfantryUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.InfantryUnits:F2}"),
-                new ComparisonRow("Artillery", $"{matchupStats.AttackerRemainingUnitsAvg.ArtilleryUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.ArtilleryUnits:F2}"),
-                new ComparisonRow("Tank", $"{matchupStats.AttackerRemainingUnitsAvg.TankUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.TankUnits:F2}"),
-                new ComparisonRow("Fighter", $"{matchupStats.AttackerRemainingUnitsAvg.FighterUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.FighterUnits:F2}"),
-                new ComparisonRow("Bomber", $"{matchupStats.AttackerRemainingUnitsAvg.BomberUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.BomberUnits:F2}"),
-                new ComparisonRow("Anti-Air", $"{matchupStats.AttackerRemainingUnitsAvg.AntiAirUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.AntiAirUnits:F2}"),
-                new ComparisonRow("Cruiser", $"{matchupStats.AttackerRemainingUnitsAvg.CruiserUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.CruiserUnits:F2}"),
-                new ComparisonRow("Battleship", $"{matchupStats.AttackerRemainingUnitsAvg.BattleshipUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.BattleshipUnits:F2}")
+                new ComparisonRow(
+                    "Infantry",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.InfantryUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.InfantryUnits:F2}"
+                ),
+                new ComparisonRow(
+                    "Artillery",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.ArtilleryUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.ArtilleryUnits:F2}"
+                ),
+                new ComparisonRow(
+                    "Tank",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.TankUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.TankUnits:F2}"
+                ),
+                new ComparisonRow(
+                    "Fighter",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.FighterUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.FighterUnits:F2}"
+                ),
+                new ComparisonRow(
+                    "Bomber",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.BomberUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.BomberUnits:F2}"
+                ),
+                new ComparisonRow(
+                    "Anti-Air",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.AntiAirUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.AntiAirUnits:F2}"
+                ),
+                new ComparisonRow(
+                    "Cruiser",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.CruiserUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.CruiserUnits:F2}"
+                ),
+                new ComparisonRow(
+                    "Battleship",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.BattleshipUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.BattleshipUnits:F2}"
+                ),
             ]
             :
             [
-                new ComparisonRow("Transport", $"{matchupStats.AttackerRemainingUnitsAvg.TransportUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.TransportUnits:F2}"),
-                new ComparisonRow("Submarine", $"{matchupStats.AttackerRemainingUnitsAvg.SubmarineUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.SubmarineUnits:F2}"),
-                new ComparisonRow("Destroyer", $"{matchupStats.AttackerRemainingUnitsAvg.DestroyerUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.DestroyerUnits:F2}"),
-                new ComparisonRow("Cruiser", $"{matchupStats.AttackerRemainingUnitsAvg.CruiserUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.CruiserUnits:F2}"),
-                new ComparisonRow("Battleship", $"{matchupStats.AttackerRemainingUnitsAvg.BattleshipUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.BattleshipUnits:F2}"),
-                new ComparisonRow("Carrier", $"{matchupStats.AttackerRemainingUnitsAvg.AircraftCarrierUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.AircraftCarrierUnits:F2}"),
-                new ComparisonRow("Fighter", $"{matchupStats.AttackerRemainingUnitsAvg.FighterUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.FighterUnits:F2}"),
-                new ComparisonRow("Bomber", $"{matchupStats.AttackerRemainingUnitsAvg.BomberUnits:F2}", $"{matchupStats.DefenderRemainingUnitsAvg.BomberUnits:F2}")
+                new ComparisonRow(
+                    "Transport",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.TransportUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.TransportUnits:F2}"
+                ),
+                new ComparisonRow(
+                    "Submarine",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.SubmarineUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.SubmarineUnits:F2}"
+                ),
+                new ComparisonRow(
+                    "Destroyer",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.DestroyerUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.DestroyerUnits:F2}"
+                ),
+                new ComparisonRow(
+                    "Cruiser",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.CruiserUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.CruiserUnits:F2}"
+                ),
+                new ComparisonRow(
+                    "Battleship",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.BattleshipUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.BattleshipUnits:F2}"
+                ),
+                new ComparisonRow(
+                    "Carrier",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.AircraftCarrierUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.AircraftCarrierUnits:F2}"
+                ),
+                new ComparisonRow(
+                    "Fighter",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.FighterUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.FighterUnits:F2}"
+                ),
+                new ComparisonRow(
+                    "Bomber",
+                    $"{matchupStats.AttackerRemainingUnitsAvg.BomberUnits:F2}",
+                    $"{matchupStats.DefenderRemainingUnitsAvg.BomberUnits:F2}"
+                ),
             ];
 
         SummaryMetricRows =
@@ -554,11 +829,11 @@ public partial class CounterPageModel : ObservableObject
             new MetricRow("Target Army Role", TargetArmyRoleLabel),
             new MetricRow("Target Cost", $"{targetArmy.Cost} IPC"),
             new MetricRow("Best Counter Cost", $"{bestCounterArmy.Cost} IPC"),
-            new MetricRow("Budget Used", $"{budgetUsed} IPC"),
+            new MetricRow("Budget", $"{budgetUsed} IPC"),
             new MetricRow("Search Simulations", SimulationCount.ToString()),
             new MetricRow("Total Battles", matchupStats.TotalBattles.ToString()),
             new MetricRow("Average Attacker IPC Loss", $"{matchupStats.AttackerAvgCpLoss:F2}"),
-            new MetricRow("Average Defender IPC Loss", $"{matchupStats.DefenderAvgCpLoss:F2}")
+            new MetricRow("Average Defender IPC Loss", $"{matchupStats.DefenderAvgCpLoss:F2}"),
         ];
 
         _lastMatchupStats = matchupStats;
@@ -609,7 +884,8 @@ public partial class CounterPageModel : ObservableObject
         return true;
     }
 
-    private ArmyBuilder CreateBuilder() => IsLandArmy ? new LandArmyBuilder() : new NavalArmadaBuilder();
+    private ArmyBuilder CreateBuilder() =>
+        IsLandArmy ? new LandArmyBuilder() : new NavalArmadaBuilder();
 
     private Army CreateTargetArmy()
     {
@@ -641,35 +917,37 @@ public partial class CounterPageModel : ObservableObject
         );
     }
 
-    private int GetLandTargetCost() => new LandArmy(
-        isAttacking: IsTargetAttacking,
-        infantryCount: LandInfantry,
-        artilleryCount: LandArtillery,
-        tankCount: LandTank,
-        fighterCount: LandFighter,
-        bomberCount: LandBomber,
-        antiAirCount: LandAntiAir,
-        cruiserCount: LandCruiser,
-        battleshipCount: LandBattleship
-    ).Cost;
+    private int GetLandTargetCost() =>
+        new LandArmy(
+            isAttacking: IsTargetAttacking,
+            infantryCount: LandInfantry,
+            artilleryCount: LandArtillery,
+            tankCount: LandTank,
+            fighterCount: LandFighter,
+            bomberCount: LandBomber,
+            antiAirCount: LandAntiAir,
+            cruiserCount: LandCruiser,
+            battleshipCount: LandBattleship
+        ).Cost;
 
-    private int GetNavalTargetCost() => new NavalArmada(
-        isAttacking: IsTargetAttacking,
-        transportCount: NavalTransport,
-        submarineCount: NavalSubmarine,
-        destroyerCount: NavalDestroyer,
-        cruiserCount: NavalCruiser,
-        battleshipCount: NavalBattleship,
-        carrierCount: NavalCarrier,
-        fighterCount: NavalFighter,
-        bomberCount: NavalBomber
-    ).Cost;
+    private int GetNavalTargetCost() =>
+        new NavalArmada(
+            isAttacking: IsTargetAttacking,
+            transportCount: NavalTransport,
+            submarineCount: NavalSubmarine,
+            destroyerCount: NavalDestroyer,
+            cruiserCount: NavalCruiser,
+            battleshipCount: NavalBattleship,
+            carrierCount: NavalCarrier,
+            fighterCount: NavalFighter,
+            bomberCount: NavalBomber
+        ).Cost;
 
-    private static string GetArmyTypeLabel(Army army) => army is LandArmy ? "Land Army" : "Naval Armada";
+    private static string GetArmyTypeLabel(Army army) =>
+        army is LandArmy ? "Land Army" : "Naval Armada";
 
-    private static string GetArmyRoleLabel(Army army) => army.IsAttacking ? "Attacking" : "Defending";
+    private static string GetArmyRoleLabel(Army army) =>
+        army.IsAttacking ? "Attacking" : "Defending";
 
     private static int Clamp(int value) => Math.Max(0, value);
 }
-
-
