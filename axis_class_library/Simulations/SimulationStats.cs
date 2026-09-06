@@ -107,6 +107,9 @@ public class SimulationStats(Army? attackingArmy = null, Army? defendingArmy = n
 
     public void RecordResult(BattleResult result)
     {
+        ArgumentNullException.ThrowIfNull(AttackingArmy);
+        ArgumentNullException.ThrowIfNull(DefendingArmy);
+
         switch (result.BattleOutcome)
         {
             case BattleOutcome.AttackerVictory:
@@ -159,8 +162,24 @@ public class SimulationStats(Army? attackingArmy = null, Army? defendingArmy = n
         return probabilityDistribution;
     }
 
+    public LuckyStats HowLuckyWasThisOutcome(Units attackerRemainingUnits, Units defenderRemainingUnits)
+    {
+        var outcome = DetermineOutcome(attackerRemainingUnits, defenderRemainingUnits);
+
+        var result = new BattleResult(
+            outcome,
+            attackerRemainingUnits.GetAllUnits(),
+            defenderRemainingUnits.GetAllUnits()
+        );
+
+        return HowLuckyWasThisOutcome(result);
+    }
+
     public LuckyStats HowLuckyWasThisOutcome(BattleResult result)
     {
+        ArgumentNullException.ThrowIfNull(AttackingArmy);
+        ArgumentNullException.ThrowIfNull(DefendingArmy);
+
         var distribution = CreateProbabilityDistribution();
         var ipcAttackerLuck = result.AttackerRemainingUnits.Cost - (AttackingArmy.Cost - AttackerAvgCpLoss); // actual remaining icp - avg remaining icp
         var ipcDefenderLuck = result.DefenderRemainingUnits.Cost - (DefendingArmy.Cost - DefenderAvgCpLoss);
@@ -189,8 +208,36 @@ public class SimulationStats(Army? attackingArmy = null, Army? defendingArmy = n
         };
     }
 
+    private static BattleOutcome DetermineOutcome(Units attackerRemainingUnits, Units defenderRemainingUnits)
+    {
+        var attackerHasUnits = attackerRemainingUnits.GetAllUnits().Any(unit => unit.ParticipatesInBattle);
+        var defenderHasUnits = defenderRemainingUnits.GetAllUnits().Any(unit => unit.ParticipatesInBattle);
+
+        if (attackerHasUnits && defenderHasUnits)
+        {
+            throw new InvalidOperationException(
+                "The actual result must represent a completed battle. Only one side, or neither side in a draw, can have remaining participating units."
+            );
+        }
+
+        if (attackerHasUnits)
+        {
+            return BattleOutcome.AttackerVictory;
+        }
+
+        if (defenderHasUnits)
+        {
+            return BattleOutcome.DefenderVictory;
+        }
+
+        return BattleOutcome.Draw;
+    }
+
     public void Explain()
     {
+        ArgumentNullException.ThrowIfNull(AttackingArmy);
+        ArgumentNullException.ThrowIfNull(DefendingArmy);
+
         Console.WriteLine("\n--- Simulation Summary ---\n");
         Console.WriteLine(
             $"Battle Results:\nAttacker Wins: {AttackerWon}, {AttackerWonPercentage:F2}%\nDefender Wins: {DefenderWon}, {DefenderWonPercentage:F2}%\nDraws: {Draw}, {DrawPercentage:F2}%"
@@ -200,9 +247,9 @@ public class SimulationStats(Army? attackingArmy = null, Army? defendingArmy = n
         );
         Console.WriteLine($"Average Attacker Remaining Units:\n {AttackerRemainingUnitsAvg}");
         Console.WriteLine($"Average Defender Remaining Units:\n {DefenderRemainingUnitsAvg}");
-        Console.WriteLine($"Average Attacker CP Loss: {AttackerAvgCpLoss:F2}");
-        Console.WriteLine($"Average Defender CP Loss: {DefenderAvgCpLoss:F2}");
-        Console.WriteLine($"{AttackingArmy.Cost} CP vs {DefendingArmy.Cost} CP");
+        Console.WriteLine($"Average Attacker IPC Loss: {AttackerAvgCpLoss:F2}");
+        Console.WriteLine($"Average Defender IPC Loss: {DefenderAvgCpLoss:F2}");
+        Console.WriteLine($"{AttackingArmy.Cost} IPC vs {DefendingArmy.Cost} IPC");
     }
 }
 

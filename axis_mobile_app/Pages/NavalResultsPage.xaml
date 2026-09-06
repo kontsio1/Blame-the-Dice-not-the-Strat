@@ -7,7 +7,7 @@
              x:DataType="pageModels:NavalPageModel"
              Title="Naval Results">
 
-    <ScrollView>
+    <ScrollView x:Name="PageScrollView">
         <VerticalStackLayout Padding="16" Spacing="12">
             <Label Text="Naval Simulation Results" FontSize="24" FontAttributes="Bold" />
 
@@ -105,6 +105,116 @@
                                         YAxes="{Binding ProbabilityDistributionYAxes}"
                                         LegendPosition="Top"
                                         HeightRequest="320" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Padding="12" Stroke="LightGray" StrokeThickness="1">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Analyze Actual Outcome" FontAttributes="Bold" FontSize="18" />
+                    <Label Text="Enter the actual remaining units from the real battle to see how lucky the result was."
+                           FontSize="14"
+                           Opacity="0.8" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <Border Grid.Column="0" Padding="10" Stroke="LightGray" StrokeThickness="1">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Attacker Remaining Units" FontAttributes="Bold" />
+                                <Grid ColumnDefinitions="*,Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                                    <Label Grid.Row="0" Text="Transport" />
+                                    <Button Grid.Row="0" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="attacker_transport" />
+                                    <Entry Grid.Row="0" Grid.Column="2" Text="{Binding ActualAttackerRemaining.Transport}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="0" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="attacker_transport" />
+                                    <Label Grid.Row="1" Text="Submarine" />
+                                    <Button Grid.Row="1" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="attacker_submarine" />
+                                    <Entry Grid.Row="1" Grid.Column="2" Text="{Binding ActualAttackerRemaining.Submarine}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="1" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="attacker_submarine" />
+                                    <Label Grid.Row="2" Text="Destroyer" />
+                                    <Button Grid.Row="2" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="attacker_destroyer" />
+                                    <Entry Grid.Row="2" Grid.Column="2" Text="{Binding ActualAttackerRemaining.Destroyer}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="2" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="attacker_destroyer" />
+                                    <Label Grid.Row="3" Text="Cruiser" />
+                                    <Button Grid.Row="3" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="attacker_cruiser" />
+                                    <Entry Grid.Row="3" Grid.Column="2" Text="{Binding ActualAttackerRemaining.Cruiser}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="3" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="attacker_cruiser" />
+                                    <Label Grid.Row="4" Text="Battleship" />
+                                    <Button Grid.Row="4" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="attacker_battleship" />
+                                    <Entry Grid.Row="4" Grid.Column="2" Text="{Binding ActualAttackerRemaining.Battleship}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="4" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="attacker_battleship" />
+                                    <Label Grid.Row="5" Text="Carrier" />
+                                    <Button Grid.Row="5" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="attacker_carrier" />
+                                    <Entry Grid.Row="5" Grid.Column="2" Text="{Binding ActualAttackerRemaining.Carrier}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="5" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="attacker_carrier" />
+                                    <Label Grid.Row="6" Text="Fighter" />
+                                    <Button Grid.Row="6" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="attacker_fighter" />
+                                    <Entry Grid.Row="6" Grid.Column="2" Text="{Binding ActualAttackerRemaining.Fighter}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="6" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="attacker_fighter" />
+                                    <Label Grid.Row="7" Text="Bomber" />
+                                    <Button Grid.Row="7" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="attacker_bomber" />
+                                    <Entry Grid.Row="7" Grid.Column="2" Text="{Binding ActualAttackerRemaining.Bomber}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="7" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="attacker_bomber" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Column="1" Padding="10" Stroke="LightGray" StrokeThickness="1">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Defender Remaining Units" FontAttributes="Bold" />
+                                <Grid ColumnDefinitions="*,Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                                    <Label Grid.Row="0" Text="Transport" />
+                                    <Button Grid.Row="0" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="defender_transport" />
+                                    <Entry Grid.Row="0" Grid.Column="2" Text="{Binding ActualDefenderRemaining.Transport}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="0" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="defender_transport" />
+                                    <Label Grid.Row="1" Text="Submarine" />
+                                    <Button Grid.Row="1" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="defender_submarine" />
+                                    <Entry Grid.Row="1" Grid.Column="2" Text="{Binding ActualDefenderRemaining.Submarine}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="1" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="defender_submarine" />
+                                    <Label Grid.Row="2" Text="Destroyer" />
+                                    <Button Grid.Row="2" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="defender_destroyer" />
+                                    <Entry Grid.Row="2" Grid.Column="2" Text="{Binding ActualDefenderRemaining.Destroyer}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="2" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="defender_destroyer" />
+                                    <Label Grid.Row="3" Text="Cruiser" />
+                                    <Button Grid.Row="3" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="defender_cruiser" />
+                                    <Entry Grid.Row="3" Grid.Column="2" Text="{Binding ActualDefenderRemaining.Cruiser}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="3" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="defender_cruiser" />
+                                    <Label Grid.Row="4" Text="Battleship" />
+                                    <Button Grid.Row="4" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="defender_battleship" />
+                                    <Entry Grid.Row="4" Grid.Column="2" Text="{Binding ActualDefenderRemaining.Battleship}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="4" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="defender_battleship" />
+                                    <Label Grid.Row="5" Text="Carrier" />
+                                    <Button Grid.Row="5" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="defender_carrier" />
+                                    <Entry Grid.Row="5" Grid.Column="2" Text="{Binding ActualDefenderRemaining.Carrier}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="5" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="defender_carrier" />
+                                    <Label Grid.Row="6" Text="Fighter" />
+                                    <Button Grid.Row="6" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="defender_fighter" />
+                                    <Entry Grid.Row="6" Grid.Column="2" Text="{Binding ActualDefenderRemaining.Fighter}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="6" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="defender_fighter" />
+                                    <Label Grid.Row="7" Text="Bomber" />
+                                    <Button Grid.Row="7" Grid.Column="1" Text="-" Command="{Binding DecrementActualOutcomeUnitCommand}" CommandParameter="defender_bomber" />
+                                    <Entry Grid.Row="7" Grid.Column="2" Text="{Binding ActualDefenderRemaining.Bomber}" Keyboard="Numeric" WidthRequest="70" HorizontalTextAlignment="Center" />
+                                    <Button Grid.Row="7" Grid.Column="3" Text="+" Command="{Binding IncrementActualOutcomeUnitCommand}" CommandParameter="defender_bomber" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <HorizontalStackLayout Spacing="8">
+                        <Button Text="Analyze Actual Result" Command="{Binding AnalyzeActualOutcomeCommand}" />
+                        <Button Text="Clear" Command="{Binding ClearActualOutcomeCommand}" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="{Binding ActualOutcomeStatusMessage}" />
+
+                    <CollectionView ItemsSource="{Binding LuckyMetricRows}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="pageModels:LuckyMetricRow">
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Padding="0,2">
+                                    <Label Grid.Column="0" Text="{Binding Metric}" />
+                                    <Label Grid.Column="1" Text="ⓘ" FontAttributes="Bold" ToolTipProperties.Text="{Binding Tooltip}" />
+                                    <Label Grid.Column="2" Text="{Binding Value}" HorizontalTextAlignment="End" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
                 </VerticalStackLayout>
             </Border>
         </VerticalStackLayout>

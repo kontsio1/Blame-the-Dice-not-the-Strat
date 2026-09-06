@@ -37,14 +37,21 @@ public partial class MainPageModel : ObservableObject
     [ObservableProperty] private List<ComparisonRow> _armyCompositionRows = [];
     [ObservableProperty] private List<ComparisonRow> _remainingUnitsRows = [];
     [ObservableProperty] private List<MetricRow> _summaryMetricRows = [];
+    [ObservableProperty] private List<LuckyMetricRow> _luckyMetricRows = [];
+    [ObservableProperty] private string _actualOutcomeStatusMessage = "Enter the actual remaining units, then analyze the result.";
     [ObservableProperty] private ISeries[] _probabilityDistributionSeries = [];
     [ObservableProperty] private Axis[] _probabilityDistributionXAxes = [];
     [ObservableProperty] private Axis[] _probabilityDistributionYAxes = [];
 
     private CancellationTokenSource? _cancellationTokenSource;
     private SimulationStats? _lastSimulationStats;
+    private int? _highlightedActualResultValue;
+
+    public OutcomeUnitsInput ActualAttackerRemaining { get; } = new();
+    public OutcomeUnitsInput ActualDefenderRemaining { get; } = new();
 
     public bool HasResults => BattleOutcomeRows.Count > 0;
+    public bool HasLuckyStats => LuckyMetricRows.Count > 0;
 
     public int AttackerCost => CreateArmy(isAttacking: true).Cost;
     public int DefenderCost => CreateArmy(isAttacking: false).Cost;
@@ -54,6 +61,12 @@ public partial class MainPageModel : ObservableObject
 
     [RelayCommand]
     private void DecrementUnit(string key) => AdjustUnit(key, -1);
+
+    [RelayCommand]
+    private void IncrementActualOutcomeUnit(string key) => AdjustActualOutcomeUnit(key, 1);
+
+    [RelayCommand]
+    private void DecrementActualOutcomeUnit(string key) => AdjustActualOutcomeUnit(key, -1);
 
     [RelayCommand]
     private void IncrementSimulationCount()
@@ -101,6 +114,7 @@ public partial class MainPageModel : ObservableObject
             }, cancellationToken);
 
             _lastSimulationStats = stats;
+            ResetActualOutcomeAnalysisState();
             PopulateResultsTables(stats);
             ResultsText = BuildResultsText(stats);
             StatusMessage = "Simulation complete.";
@@ -124,6 +138,7 @@ public partial class MainPageModel : ObservableObject
             RemainingUnitsRows = [];
             SummaryMetricRows = [];
             _lastSimulationStats = null;
+            ResetActualOutcomeAnalysisState();
             UpdateProbabilityChart();
             OnPropertyChanged(nameof(HasResults));
         }
@@ -183,6 +198,70 @@ public partial class MainPageModel : ObservableObject
         OnPropertyChanged(nameof(AttackerCost));
         OnPropertyChanged(nameof(DefenderCost));
         StatusMessage = "All land units reset to zero.";
+        ResetActualOutcomeAnalysisState();
+    }
+
+    [RelayCommand]
+    private void AnalyzeActualOutcome()
+    {
+        if (_lastSimulationStats?.AttackingArmy is not LandArmy attackingArmy ||
+            _lastSimulationStats.DefendingArmy is not LandArmy defendingArmy)
+        {
+            ActualOutcomeStatusMessage = "Run a simulation first.";
+            return;
+        }
+
+        var validationError = ActualOutcomeAnalysisHelper.ValidateLandOutcome(
+            ActualAttackerRemaining,
+            ActualDefenderRemaining,
+            attackingArmy.Units,
+            defendingArmy.Units
+        );
+
+        if (validationError is not null)
+        {
+            LuckyMetricRows = [];
+            _highlightedActualResultValue = null;
+            ActualOutcomeStatusMessage = validationError;
+            OnPropertyChanged(nameof(HasLuckyStats));
+            UpdateProbabilityChart();
+            return;
+        }
+
+        var actualAttackerArmy = ActualOutcomeAnalysisHelper.CreateLandArmy(ActualAttackerRemaining, true);
+        var actualDefenderArmy = ActualOutcomeAnalysisHelper.CreateLandArmy(ActualDefenderRemaining, false);
+
+        try
+        {
+            var luckyStats = _lastSimulationStats.HowLuckyWasThisOutcome(
+                actualAttackerArmy.Units,
+                actualDefenderArmy.Units
+            );
+
+            _highlightedActualResultValue = actualAttackerArmy.Cost - actualDefenderArmy.Cost;
+            LuckyMetricRows = ActualOutcomeAnalysisHelper.BuildLuckyMetricRows(luckyStats);
+            ActualOutcomeStatusMessage = ActualOutcomeAnalysisHelper.FormatOutcomeStatus(
+                actualAttackerArmy.Cost,
+                actualDefenderArmy.Cost
+            );
+            OnPropertyChanged(nameof(HasLuckyStats));
+            UpdateProbabilityChart();
+        }
+        catch (Exception ex)
+        {
+            LuckyMetricRows = [];
+            _highlightedActualResultValue = null;
+            ActualOutcomeStatusMessage = ex.Message;
+            OnPropertyChanged(nameof(HasLuckyStats));
+            UpdateProbabilityChart();
+        }
+    }
+
+    [RelayCommand]
+    private void ClearActualOutcome()
+    {
+        ResetActualOutcomeAnalysisState();
+        UpdateProbabilityChart();
     }
 
     private void AdjustUnit(string key, int delta)
@@ -244,6 +323,18 @@ public partial class MainPageModel : ObservableObject
     }
 
     private static int Clamp(int value) => Math.Max(0, value);
+
+    private void AdjustActualOutcomeUnit(string key, int delta)
+    {
+        var parts = key.Split('_', 2);
+        if (parts.Length != 2)
+        {
+            return;
+        }
+
+        var target = parts[0] == "attacker" ? ActualAttackerRemaining : ActualDefenderRemaining;
+        ActualOutcomeAnalysisHelper.AdjustUnitCount(target, parts[1], delta);
+    }
 
     private LandArmy CreateArmy(bool isAttacking)
     {
@@ -316,17 +407,30 @@ public partial class MainPageModel : ObservableObject
         SummaryMetricRows =
         [
             new MetricRow("Total Battles", stats.TotalBattles.ToString()),
-            new MetricRow("Average Attacker CP Loss", $"{stats.AttackerAvgCpLoss:F2}"),
-            new MetricRow("Average Defender CP Loss", $"{stats.DefenderAvgCpLoss:F2}"),
-            new MetricRow("Cost Comparison", $"{stats.AttackingArmy?.Cost ?? 0} CP vs {stats.DefendingArmy?.Cost ?? 0} CP")
+            new MetricRow("Average Attacker IPC Loss", $"{stats.AttackerAvgCpLoss:F2}"),
+            new MetricRow("Average Defender IPC Loss", $"{stats.DefenderAvgCpLoss:F2}"),
+            new MetricRow("Cost Comparison", $"{stats.AttackingArmy?.Cost ?? 0} IPC vs {stats.DefendingArmy?.Cost ?? 0} IPC")
         ];
 
         UpdateProbabilityChart();
     }
 
+    private void ResetActualOutcomeAnalysisState()
+    {
+        ActualAttackerRemaining.Reset();
+        ActualDefenderRemaining.Reset();
+        LuckyMetricRows = [];
+        ActualOutcomeStatusMessage = "Enter the actual remaining units, then analyze the result.";
+        _highlightedActualResultValue = null;
+        OnPropertyChanged(nameof(HasLuckyStats));
+    }
+
     private void UpdateProbabilityChart()
     {
-        var chartData = ProbabilityDistributionChartBuilder.Build(_lastSimulationStats);
+        var chartData = ProbabilityDistributionChartBuilder.Build(
+            _lastSimulationStats,
+            _highlightedActualResultValue
+        );
         ProbabilityDistributionSeries = chartData.Series;
         ProbabilityDistributionXAxes = chartData.XAxes;
         ProbabilityDistributionYAxes = chartData.YAxes;
@@ -350,9 +454,9 @@ public partial class MainPageModel : ObservableObject
         sb.AppendLine($"{stats.AttackerRemainingUnitsAvg}");
         sb.AppendLine("Average Defender Remaining Units:");
         sb.AppendLine($"{stats.DefenderRemainingUnitsAvg}");
-        sb.AppendLine($"Average Attacker CP Loss: {stats.AttackerAvgCpLoss:F2}");
-        sb.AppendLine($"Average Defender CP Loss: {stats.DefenderAvgCpLoss:F2}");
-        sb.AppendLine($"{stats.AttackingArmy?.Cost ?? 0} CP vs {stats.DefendingArmy?.Cost ?? 0} CP");
+        sb.AppendLine($"Average Attacker IPC Loss: {stats.AttackerAvgCpLoss:F2}");
+        sb.AppendLine($"Average Defender IPC Loss: {stats.DefenderAvgCpLoss:F2}");
+        sb.AppendLine($"{stats.AttackingArmy?.Cost ?? 0} IPC vs {stats.DefendingArmy?.Cost ?? 0} IPC");
 
         return sb.ToString();
     }

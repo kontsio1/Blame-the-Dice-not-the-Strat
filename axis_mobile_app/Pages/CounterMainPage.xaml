@@ -139,29 +139,47 @@
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Search Options" FontAttributes="Bold" FontSize="18" />
 
-                    <Grid ColumnDefinitions="*" ColumnSpacing="12">
-                        <VerticalStackLayout Grid.Column="0" Spacing="4">
-                            <Label Text="Budget Override" FontAttributes="Bold" />
-                            <Entry Text="{Binding BudgetOverrideText, Mode=TwoWay}"
-                                   Placeholder="{Binding BudgetOverridePlaceholder}"
-                                   Keyboard="Numeric"
-                                   HorizontalTextAlignment="Center" />
-                        </VerticalStackLayout>
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
+                        <Label Grid.Column="0"
+                               Text="Budget for Counter Army (IPC)"
+                               FontAttributes="Bold"
+                               VerticalTextAlignment="Center" />
+                        <Button Grid.Column="1"
+                                Text="-"
+                                Command="{Binding DecrementBudgetOverrideCommand}"
+                                HeightRequest="36"
+                                WidthRequest="36"
+                                Padding="0" />
+                        <Entry Grid.Column="2"
+                               Text="{Binding BudgetOverrideText, Mode=TwoWay}"
+                               Placeholder="{Binding BudgetOverridePlaceholder}"
+                               Keyboard="Numeric"
+                               HorizontalTextAlignment="Center"
+                               WidthRequest="40"
+                               HeightRequest="36" />
+                        <Button Grid.Column="3"
+                                Text="+"
+                                Command="{Binding IncrementBudgetOverrideCommand}"
+                                HeightRequest="36"
+                                WidthRequest="36"
+                                Padding="0" />
                     </Grid>
 
                     <Grid ColumnDefinitions="*" ColumnSpacing="12">
                         <VerticalStackLayout Grid.Column="0" Spacing="4">
-                            <Label Text="Search Battles" FontAttributes="Bold" />
-                            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
-                                <Button Grid.Column="0" Text="-" Command="{Binding DecrementSimulationCountCommand}" />
-                                <Entry Grid.Column="1"
+                            <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+                                <Label Text="Simulations Per Battle" FontAttributes="Bold" VerticalTextAlignment="Center" />
+                                <Button Grid.Column="1" Text="-" Command="{Binding DecrementSimulationCountCommand}" />
+                                <Entry Grid.Column="2"
                                        Text="{Binding SimulationCount, Mode=TwoWay}"
                                        Keyboard="Numeric"
                                        HorizontalTextAlignment="Center" />
-                                <Button Grid.Column="2" Text="+" Command="{Binding IncrementSimulationCountCommand}" />
-                                <Button Grid.Column="3" Text="Run" Command="{Binding RunCounterSearchCommand}" />
-                                <Button Grid.Column="4" Text="Cancel" Command="{Binding CancelSimulationCommand}" IsVisible="{Binding IsBusy}" />
+                                <Button Grid.Column="3" Text="+" Command="{Binding IncrementSimulationCountCommand}" />
                             </Grid>
+                            <HorizontalStackLayout Spacing="8">
+                                <Button Text="Run" Command="{Binding RunCounterSearchCommand}" />
+                                <Button Text="Cancel" Command="{Binding CancelSimulationCommand}" IsVisible="{Binding IsBusy}" />
+                            </HorizontalStackLayout>
                         </VerticalStackLayout>
                     </Grid>
 

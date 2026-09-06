@@ -36,7 +36,7 @@ public partial class CounterPageModel : ObservableObject
     [ObservableProperty] private int _navalFighter;
     [ObservableProperty] private int _navalBomber;
 
-    [ObservableProperty] private int _simulationCount = 10000;
+    [ObservableProperty] private int _simulationCount = 1000;
     [ObservableProperty] private string _budgetOverrideText = string.Empty;
     [ObservableProperty] private bool _isBusy;
     [ObservableProperty] private double _counterSearchProgress;
@@ -49,11 +49,13 @@ public partial class CounterPageModel : ObservableObject
     [ObservableProperty] private string _bestCounterArmyCompositionText = string.Empty;
     [ObservableProperty] private string _bestCounterArmyCostText = string.Empty;
     [ObservableProperty] private string _resultsSummaryText = string.Empty;
+    [ObservableProperty] private string _actualOutcomeStatusMessage = "Enter the actual remaining units, then analyze the result.";
 
     [ObservableProperty] private List<OutcomeRow> _battleOutcomeRows = [];
     [ObservableProperty] private List<ComparisonRow> _armyCompositionRows = [];
     [ObservableProperty] private List<ComparisonRow> _remainingUnitsRows = [];
     [ObservableProperty] private List<MetricRow> _summaryMetricRows = [];
+    [ObservableProperty] private List<LuckyMetricRow> _luckyMetricRows = [];
     [ObservableProperty] private ISeries[] _probabilityDistributionSeries = [];
     [ObservableProperty] private Axis[] _probabilityDistributionXAxes = [];
     [ObservableProperty] private Axis[] _probabilityDistributionYAxes = [];
@@ -62,6 +64,10 @@ public partial class CounterPageModel : ObservableObject
     private Army? _lastBestCounterArmy;
     private CancellationTokenSource? _cancellationTokenSource;
     private SimulationStats? _lastMatchupStats;
+    private int? _highlightedActualResultValue;
+
+    public OutcomeUnitsInput ActualAttackerRemaining { get; } = new();
+    public OutcomeUnitsInput ActualDefenderRemaining { get; } = new();
 
     public CounterPageModel()
     {
@@ -82,12 +88,25 @@ public partial class CounterPageModel : ObservableObject
     public double CounterSearchProgressFraction => Math.Clamp(CounterSearchProgress / 100.0, 0, 1);
     public int TargetCost => IsLandArmy ? GetLandTargetCost() : GetNavalTargetCost();
     public int BestCounterCost => _lastBestCounterArmy?.Cost ?? 0;
+    public bool HasLuckyStats => LuckyMetricRows.Count > 0;
 
     [RelayCommand]
     private void IncrementUnit(string key) => AdjustUnit(key, 1);
 
     [RelayCommand]
     private void DecrementUnit(string key) => AdjustUnit(key, -1);
+
+    [RelayCommand]
+    private void IncrementBudgetOverride() => AdjustBudgetOverride(1);
+
+    [RelayCommand]
+    private void DecrementBudgetOverride() => AdjustBudgetOverride(-1);
+
+    [RelayCommand]
+    private void IncrementActualOutcomeUnit(string key) => AdjustActualOutcomeUnit(key, 1);
+
+    [RelayCommand]
+    private void DecrementActualOutcomeUnit(string key) => AdjustActualOutcomeUnit(key, -1);
 
     [RelayCommand]
     private void IncrementSimulationCount()
@@ -156,6 +175,7 @@ public partial class CounterPageModel : ObservableObject
                 return simulation.Stats;
             }, cancellationToken);
 
+            ResetActualOutcomeAnalysisState();
             PopulateResults(targetArmy, bestCounterArmy, matchupStats, budget);
             StatusMessage = "Counter search complete.";
             CounterSearchProgress = 100;
@@ -230,13 +250,106 @@ public partial class CounterPageModel : ObservableObject
         NavalFighter = 0;
         NavalBomber = 0;
 
-        SimulationCount = 10000;
+        SimulationCount = 1000;
         _budgetOverrideIsCustom = false;
         BudgetOverrideText = TargetCost.ToString();
         CounterSearchProgress = 0;
         StatusMessage = "All counter search inputs reset to defaults.";
         ResetResults();
         RefreshDerivedState();
+    }
+
+    [RelayCommand]
+    private void AnalyzeActualOutcome()
+    {
+        if (_lastMatchupStats is null)
+        {
+            ActualOutcomeStatusMessage = "Run a counter search first.";
+            return;
+        }
+
+        string? validationError;
+        Army actualAttackerArmy;
+        Army actualDefenderArmy;
+
+        if (IsLandArmy)
+        {
+            if (_lastMatchupStats.AttackingArmy is not LandArmy attackingArmy ||
+                _lastMatchupStats.DefendingArmy is not LandArmy defendingArmy)
+            {
+                ActualOutcomeStatusMessage = "The last counter matchup was not a land battle.";
+                return;
+            }
+
+            validationError = ActualOutcomeAnalysisHelper.ValidateLandOutcome(
+                ActualAttackerRemaining,
+                ActualDefenderRemaining,
+                attackingArmy.Units,
+                defendingArmy.Units
+            );
+            actualAttackerArmy = ActualOutcomeAnalysisHelper.CreateLandArmy(ActualAttackerRemaining, true);
+            actualDefenderArmy = ActualOutcomeAnalysisHelper.CreateLandArmy(ActualDefenderRemaining, false);
+        }
+        else
+        {
+            if (_lastMatchupStats.AttackingArmy is not NavalArmada attackingArmada ||
+                _lastMatchupStats.DefendingArmy is not NavalArmada defendingArmada)
+            {
+                ActualOutcomeStatusMessage = "The last counter matchup was not a naval battle.";
+                return;
+            }
+
+            validationError = ActualOutcomeAnalysisHelper.ValidateNavalOutcome(
+                ActualAttackerRemaining,
+                ActualDefenderRemaining,
+                attackingArmada.Units,
+                defendingArmada.Units
+            );
+            actualAttackerArmy = ActualOutcomeAnalysisHelper.CreateNavalArmada(ActualAttackerRemaining, true);
+            actualDefenderArmy = ActualOutcomeAnalysisHelper.CreateNavalArmada(ActualDefenderRemaining, false);
+        }
+
+        if (validationError is not null)
+        {
+            LuckyMetricRows = [];
+            _highlightedActualResultValue = null;
+            ActualOutcomeStatusMessage = validationError;
+            OnPropertyChanged(nameof(HasLuckyStats));
+            UpdateProbabilityChart();
+            return;
+        }
+
+        try
+        {
+            var luckyStats = _lastMatchupStats.HowLuckyWasThisOutcome(
+                actualAttackerArmy.Units,
+                actualDefenderArmy.Units
+            );
+
+            _highlightedActualResultValue = actualAttackerArmy.Cost - actualDefenderArmy.Cost;
+            LuckyMetricRows = ActualOutcomeAnalysisHelper.BuildLuckyMetricRows(luckyStats);
+            ActualOutcomeStatusMessage = ActualOutcomeAnalysisHelper.FormatOutcomeStatus(
+                actualAttackerArmy.Cost,
+                actualDefenderArmy.Cost
+            );
+            OnPropertyChanged(nameof(HasLuckyStats));
+            UpdateProbabilityChart();
+        }
+        catch (Exception ex)
+        {
+            LuckyMetricRows = [];
+            _highlightedActualResultValue = null;
+            ActualOutcomeStatusMessage = ex.Message;
+            OnPropertyChanged(nameof(HasLuckyStats));
+            UpdateProbabilityChart();
+        }
+    }
+
+    [RelayCommand]
+    private void ClearActualOutcome()
+    {
+        ResetActualOutcomeAnalysisState();
+        UpdateProbabilityChart();
     }
 
     partial void OnSelectedArmyTypeChanged(string value)
@@ -292,6 +405,33 @@ public partial class CounterPageModel : ObservableObject
         RefreshBudgetOverrideDefault();
     }
 
+    private void AdjustActualOutcomeUnit(string key, int delta)
+    {
+        var parts = key.Split('_', 2);
+        if (parts.Length != 2)
+        {
+            return;
+        }
+
+        var target = parts[0] == "attacker" ? ActualAttackerRemaining : ActualDefenderRemaining;
+        ActualOutcomeAnalysisHelper.AdjustUnitCount(target, parts[1], delta);
+    }
+
+    private void AdjustBudgetOverride(int delta)
+    {
+        var currentBudget = TargetCost;
+
+        if (int.TryParse(BudgetOverrideText.Trim(), out var parsedBudget))
+        {
+            currentBudget = parsedBudget;
+        }
+
+        currentBudget = Math.Max(1, currentBudget + delta);
+        _budgetOverrideIsCustom = true;
+        BudgetOverrideText = currentBudget.ToString();
+        OnPropertyChanged(nameof(BudgetOverridePlaceholder));
+    }
+
     private void RefreshDerivedState()
     {
         OnPropertyChanged(nameof(IsLandArmy));
@@ -333,6 +473,7 @@ public partial class CounterPageModel : ObservableObject
         RemainingUnitsRows = [];
         SummaryMetricRows = [];
         _lastMatchupStats = null;
+        ResetActualOutcomeAnalysisState();
         UpdateProbabilityChart();
         OnPropertyChanged(nameof(HasResults));
         OnPropertyChanged(nameof(BestCounterCost));
@@ -344,11 +485,11 @@ public partial class CounterPageModel : ObservableObject
 
         TargetArmySummaryText = $"Target {GetArmyTypeLabel(targetArmy)} ({GetArmyRoleLabel(targetArmy)})";
         TargetArmyCompositionText = targetArmy.Units.ToString();
-        TargetArmyCostText = $"{targetArmy.Cost} CP";
+        TargetArmyCostText = $"{targetArmy.Cost} IPC";
         BestCounterArmySummaryText = $"Best Counter {GetArmyTypeLabel(bestCounterArmy)} ({GetArmyRoleLabel(bestCounterArmy)})";
         BestCounterArmyCompositionText = bestCounterArmy.Units.ToString();
-        BestCounterArmyCostText = $"{bestCounterArmy.Cost} CP";
-        ResultsSummaryText = $"Budget used: {budgetUsed} CP • Search simulations: {SimulationCount} • Final matchup simulations: {matchupStats.TotalBattles}";
+        BestCounterArmyCostText = $"{bestCounterArmy.Cost} IPC";
+        ResultsSummaryText = $"Budget used: {budgetUsed} IPC • Search simulations: {SimulationCount} • Final matchup simulations: {matchupStats.TotalBattles}";
 
         BattleOutcomeRows =
         [
@@ -411,13 +552,13 @@ public partial class CounterPageModel : ObservableObject
         [
             new MetricRow("Target Army Type", TargetArmyTypeLabel),
             new MetricRow("Target Army Role", TargetArmyRoleLabel),
-            new MetricRow("Target Cost", $"{targetArmy.Cost} CP"),
-            new MetricRow("Best Counter Cost", $"{bestCounterArmy.Cost} CP"),
-            new MetricRow("Budget Used", $"{budgetUsed} CP"),
+            new MetricRow("Target Cost", $"{targetArmy.Cost} IPC"),
+            new MetricRow("Best Counter Cost", $"{bestCounterArmy.Cost} IPC"),
+            new MetricRow("Budget Used", $"{budgetUsed} IPC"),
             new MetricRow("Search Simulations", SimulationCount.ToString()),
             new MetricRow("Total Battles", matchupStats.TotalBattles.ToString()),
-            new MetricRow("Average Attacker CP Loss", $"{matchupStats.AttackerAvgCpLoss:F2}"),
-            new MetricRow("Average Defender CP Loss", $"{matchupStats.DefenderAvgCpLoss:F2}")
+            new MetricRow("Average Attacker IPC Loss", $"{matchupStats.AttackerAvgCpLoss:F2}"),
+            new MetricRow("Average Defender IPC Loss", $"{matchupStats.DefenderAvgCpLoss:F2}")
         ];
 
         _lastMatchupStats = matchupStats;
@@ -429,10 +570,23 @@ public partial class CounterPageModel : ObservableObject
 
     private void UpdateProbabilityChart()
     {
-        var chartData = ProbabilityDistributionChartBuilder.Build(_lastMatchupStats);
+        var chartData = ProbabilityDistributionChartBuilder.Build(
+            _lastMatchupStats,
+            _highlightedActualResultValue
+        );
         ProbabilityDistributionSeries = chartData.Series;
         ProbabilityDistributionXAxes = chartData.XAxes;
         ProbabilityDistributionYAxes = chartData.YAxes;
+    }
+
+    private void ResetActualOutcomeAnalysisState()
+    {
+        ActualAttackerRemaining.Reset();
+        ActualDefenderRemaining.Reset();
+        LuckyMetricRows = [];
+        ActualOutcomeStatusMessage = "Enter the actual remaining units, then analyze the result.";
+        _highlightedActualResultValue = null;
+        OnPropertyChanged(nameof(HasLuckyStats));
     }
 
     private bool TryGetBudgetOverride(out int budget, out string errorMessage)

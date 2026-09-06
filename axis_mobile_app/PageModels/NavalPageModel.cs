@@ -35,14 +35,21 @@ public partial class NavalPageModel : ObservableObject
     [ObservableProperty] private List<ComparisonRow> _armyCompositionRows = [];
     [ObservableProperty] private List<ComparisonRow> _remainingUnitsRows = [];
     [ObservableProperty] private List<MetricRow> _summaryMetricRows = [];
+    [ObservableProperty] private List<LuckyMetricRow> _luckyMetricRows = [];
+    [ObservableProperty] private string _actualOutcomeStatusMessage = "Enter the actual remaining units, then analyze the result.";
     [ObservableProperty] private ISeries[] _probabilityDistributionSeries = [];
     [ObservableProperty] private Axis[] _probabilityDistributionXAxes = [];
     [ObservableProperty] private Axis[] _probabilityDistributionYAxes = [];
 
     private CancellationTokenSource? _cancellationTokenSource;
     private SimulationStats? _lastSimulationStats;
+    private int? _highlightedActualResultValue;
+
+    public OutcomeUnitsInput ActualAttackerRemaining { get; } = new();
+    public OutcomeUnitsInput ActualDefenderRemaining { get; } = new();
 
     public bool HasResults => BattleOutcomeRows.Count > 0;
+    public bool HasLuckyStats => LuckyMetricRows.Count > 0;
 
     public int AttackerCost => CreateArmada(true).Cost;
     public int DefenderCost => CreateArmada(false).Cost;
@@ -52,6 +59,12 @@ public partial class NavalPageModel : ObservableObject
 
     [RelayCommand]
     private void DecrementUnit(string key) => AdjustUnit(key, -1);
+
+    [RelayCommand]
+    private void IncrementActualOutcomeUnit(string key) => AdjustActualOutcomeUnit(key, 1);
+
+    [RelayCommand]
+    private void DecrementActualOutcomeUnit(string key) => AdjustActualOutcomeUnit(key, -1);
 
     [RelayCommand]
     private void IncrementSimulationCount()
@@ -99,6 +112,7 @@ public partial class NavalPageModel : ObservableObject
             }, cancellationToken);
 
             _lastSimulationStats = stats;
+            ResetActualOutcomeAnalysisState();
             PopulateResultsTables(stats);
             StatusMessage = "Naval simulation complete.";
             OnPropertyChanged(nameof(AttackerCost));
@@ -119,6 +133,7 @@ public partial class NavalPageModel : ObservableObject
             RemainingUnitsRows = [];
             SummaryMetricRows = [];
             _lastSimulationStats = null;
+            ResetActualOutcomeAnalysisState();
             UpdateProbabilityChart();
             OnPropertyChanged(nameof(HasResults));
         }
@@ -178,6 +193,70 @@ public partial class NavalPageModel : ObservableObject
         OnPropertyChanged(nameof(AttackerCost));
         OnPropertyChanged(nameof(DefenderCost));
         StatusMessage = "All naval units reset to zero.";
+        ResetActualOutcomeAnalysisState();
+    }
+
+    [RelayCommand]
+    private void AnalyzeActualOutcome()
+    {
+        if (_lastSimulationStats?.AttackingArmy is not NavalArmada attackingArmada ||
+            _lastSimulationStats.DefendingArmy is not NavalArmada defendingArmada)
+        {
+            ActualOutcomeStatusMessage = "Run a simulation first.";
+            return;
+        }
+
+        var validationError = ActualOutcomeAnalysisHelper.ValidateNavalOutcome(
+            ActualAttackerRemaining,
+            ActualDefenderRemaining,
+            attackingArmada.Units,
+            defendingArmada.Units
+        );
+
+        if (validationError is not null)
+        {
+            LuckyMetricRows = [];
+            _highlightedActualResultValue = null;
+            ActualOutcomeStatusMessage = validationError;
+            OnPropertyChanged(nameof(HasLuckyStats));
+            UpdateProbabilityChart();
+            return;
+        }
+
+        var actualAttackerArmada = ActualOutcomeAnalysisHelper.CreateNavalArmada(ActualAttackerRemaining, true);
+        var actualDefenderArmada = ActualOutcomeAnalysisHelper.CreateNavalArmada(ActualDefenderRemaining, false);
+
+        try
+        {
+            var luckyStats = _lastSimulationStats.HowLuckyWasThisOutcome(
+                actualAttackerArmada.Units,
+                actualDefenderArmada.Units
+            );
+
+            _highlightedActualResultValue = actualAttackerArmada.Cost - actualDefenderArmada.Cost;
+            LuckyMetricRows = ActualOutcomeAnalysisHelper.BuildLuckyMetricRows(luckyStats);
+            ActualOutcomeStatusMessage = ActualOutcomeAnalysisHelper.FormatOutcomeStatus(
+                actualAttackerArmada.Cost,
+                actualDefenderArmada.Cost
+            );
+            OnPropertyChanged(nameof(HasLuckyStats));
+            UpdateProbabilityChart();
+        }
+        catch (Exception ex)
+        {
+            LuckyMetricRows = [];
+            _highlightedActualResultValue = null;
+            ActualOutcomeStatusMessage = ex.Message;
+            OnPropertyChanged(nameof(HasLuckyStats));
+            UpdateProbabilityChart();
+        }
+    }
+
+    [RelayCommand]
+    private void ClearActualOutcome()
+    {
+        ResetActualOutcomeAnalysisState();
+        UpdateProbabilityChart();
     }
 
     private void AdjustUnit(string key, int delta)
@@ -205,6 +284,18 @@ public partial class NavalPageModel : ObservableObject
 
         OnPropertyChanged(nameof(AttackerCost));
         OnPropertyChanged(nameof(DefenderCost));
+    }
+
+    private void AdjustActualOutcomeUnit(string key, int delta)
+    {
+        var parts = key.Split('_', 2);
+        if (parts.Length != 2)
+        {
+            return;
+        }
+
+        var target = parts[0] == "attacker" ? ActualAttackerRemaining : ActualDefenderRemaining;
+        ActualOutcomeAnalysisHelper.AdjustUnitCount(target, parts[1], delta);
     }
 
     private NavalArmada CreateArmada(bool isAttacking)
@@ -278,17 +369,30 @@ public partial class NavalPageModel : ObservableObject
         SummaryMetricRows =
         [
             new MetricRow("Total Battles", stats.TotalBattles.ToString()),
-            new MetricRow("Average Attacker CP Loss", $"{stats.AttackerAvgCpLoss:F2}"),
-            new MetricRow("Average Defender CP Loss", $"{stats.DefenderAvgCpLoss:F2}"),
-            new MetricRow("Cost Comparison", $"{stats.AttackingArmy?.Cost ?? 0} CP vs {stats.DefendingArmy?.Cost ?? 0} CP")
+            new MetricRow("Average Attacker IPC Loss", $"{stats.AttackerAvgCpLoss:F2}"),
+            new MetricRow("Average Defender IPC Loss", $"{stats.DefenderAvgCpLoss:F2}"),
+            new MetricRow("Cost Comparison", $"{stats.AttackingArmy?.Cost ?? 0} IPC vs {stats.DefendingArmy?.Cost ?? 0} IPC")
         ];
 
         UpdateProbabilityChart();
     }
 
+    private void ResetActualOutcomeAnalysisState()
+    {
+        ActualAttackerRemaining.Reset();
+        ActualDefenderRemaining.Reset();
+        LuckyMetricRows = [];
+        ActualOutcomeStatusMessage = "Enter the actual remaining units, then analyze the result.";
+        _highlightedActualResultValue = null;
+        OnPropertyChanged(nameof(HasLuckyStats));
+    }
+
     private void UpdateProbabilityChart()
     {
-        var chartData = ProbabilityDistributionChartBuilder.Build(_lastSimulationStats);
+        var chartData = ProbabilityDistributionChartBuilder.Build(
+            _lastSimulationStats,
+            _highlightedActualResultValue
+        );
         ProbabilityDistributionSeries = chartData.Series;
         ProbabilityDistributionXAxes = chartData.XAxes;
         ProbabilityDistributionYAxes = chartData.YAxes;

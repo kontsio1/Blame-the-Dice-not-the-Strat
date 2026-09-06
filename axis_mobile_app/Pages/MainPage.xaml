@@ -25,7 +25,7 @@
                     <VerticalStackLayout Spacing="8">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                             <Label Grid.Column="0" Text="Attacking Army" FontAttributes="Bold" FontSize="18" />
-                            <Label Grid.Column="1" Text="{Binding AttackerCost, StringFormat='Cost: {0} CP'}" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="1" Text="{Binding AttackerCost, StringFormat='Cost: {0} IPC'}" VerticalTextAlignment="Center" />
                         </Grid>
 
                         <Grid ColumnDefinitions="*,Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
@@ -82,7 +82,7 @@
                     <VerticalStackLayout Spacing="8">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                             <Label Grid.Column="0" Text="Defending Army" FontAttributes="Bold" FontSize="18" />
-                            <Label Grid.Column="1" Text="{Binding DefenderCost, StringFormat='Cost: {0} CP'}" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="1" Text="{Binding DefenderCost, StringFormat='Cost: {0} IPC'}" VerticalTextAlignment="Center" />
                         </Grid>
 
                         <Grid ColumnDefinitions="*,Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">

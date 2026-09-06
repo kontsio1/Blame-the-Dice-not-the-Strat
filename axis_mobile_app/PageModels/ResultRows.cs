@@ -6,4 +6,6 @@ public record ComparisonRow(string Unit, string Attacker, string Defender);
 
 public record MetricRow(string Metric, string Value);
 
+public record LuckyMetricRow(string Metric, string Value, string Tooltip);
+
 

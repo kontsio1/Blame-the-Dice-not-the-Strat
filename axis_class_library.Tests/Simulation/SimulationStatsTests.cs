@@ -585,6 +585,49 @@ public class SimulationStatsTests
         stats.AttackerWonPercentage.Should().Be(100.0);
         stats.AttackerRemainingUnitsAvg.InfantryUnits.Should().Be(3); // Average of 4 and 2
     }
+
+    [Fact]
+    public void HowLuckyWasThisOutcome_UnitsOverload_ShouldMatchBattleResultOverload()
+    {
+        var attackingArmy = new LandArmy(isAttacking: true, infantryCount: 3);
+        var defendingArmy = new LandArmy(isAttacking: false, infantryCount: 2);
+        var stats = new SimulationStats(attackingArmy, defendingArmy);
+
+        stats.RecordResult(new BattleResult(BattleOutcome.AttackerVictory, attackingArmy.GetAllAliveUnits(), []));
+        stats.RecordResult(new BattleResult(BattleOutcome.DefenderVictory, [], defendingArmy.GetAllAliveUnits()));
+
+        var attackerRemaining = new LandArmy(isAttacking: true, infantryCount: 1).Units;
+        var defenderRemaining = new LandArmy(isAttacking: false).Units;
+
+        var fromUnits = stats.HowLuckyWasThisOutcome(attackerRemaining, defenderRemaining);
+        var fromResult = stats.HowLuckyWasThisOutcome(
+            new BattleResult(
+                BattleOutcome.AttackerVictory,
+                new LandArmy(isAttacking: true, infantryCount: 1).GetAllAliveUnits(),
+                [])
+        );
+
+        fromUnits.percentile.Should().Be(fromResult.percentile);
+        fromUnits.shock.Should().Be(fromResult.shock);
+        fromUnits.ipcAttackerLuck.Should().Be(fromResult.ipcAttackerLuck);
+        fromUnits.ipcDefenderLuck.Should().Be(fromResult.ipcDefenderLuck);
+    }
+
+    [Fact]
+    public void HowLuckyWasThisOutcome_UnitsOverload_WithBothSidesRemaining_ShouldThrow()
+    {
+        var stats = new SimulationStats(
+            new LandArmy(isAttacking: true, infantryCount: 3),
+            new LandArmy(isAttacking: false, infantryCount: 3)
+        );
+
+        var attackerRemaining = new LandArmy(isAttacking: true, infantryCount: 1).Units;
+        var defenderRemaining = new LandArmy(isAttacking: false, infantryCount: 1).Units;
+
+        Action act = () => stats.HowLuckyWasThisOutcome(attackerRemaining, defenderRemaining);
+
+        act.Should().Throw<InvalidOperationException>();
+    }
     
     #endregion
 }
